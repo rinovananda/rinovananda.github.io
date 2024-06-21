@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIVI STORE</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+        }
+        header {
+            background-color: #1a1a1a;
+            color: #ffcc00;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .navbar {
+            background-color: #1a1a1a;
+        }
+        .navbar-nav .nav-link {
+            color: #ffcc00 !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffcc00 !important;
+        }
+        .card {
+            background-color: #1a1a1a;
+            color: white;
+            margin-bottom: 20px;
+            border: 1px solid #ffcc00;
+        }
+        .card-header, .btn-primary {
+            background-color: #ffcc00;
+            border: none;
+        }
+        footer {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 40px 0;
+        }
+        footer h6 {
+            color: #ffcc00;
+        }
+        footer a {
+            color: #ffcc00;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        function togglePriceList(id) {
+            var element = document.getElementById(id);
+            if (element.style.display === "none" || element.style.display === "") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+    <header class="container-fluid">
+        <img src="logorivi.png" alt="JOKIWITH.RIVI STORE" style="height: 100px;">
+    </header>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about-me">About Me</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#joki-mlbb">Joki MLBB</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#joki-tugas">Joki Tugas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#top-up">Top Up Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#aplikasi-murah">Aplikasi Murah</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimoni">Testimoni</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact Us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div id="about-me" class="section mb-5">
+            <h2>About Me</h2>
+            <p>Rivi Store adalah layanan joki terbaik dan terpercaya untuk game dan tugas kuliah. Saya memulai layanan ini sejak SMK kelas 1, berawal dari memenangkan berbagai turnamen Mobile Legends di tingkat kabupaten dan provinsi. Keberhasilan tersebut membuat saya memberanikan diri membuka jasa joki Mobile Legends, yang hingga kini masih berjalan dengan baik. Selain itu, saya juga menyediakan jasa joki tugas, mulai dari makalah, PPT, jurnal, hingga surat-menyurat. Rivi Store berdedikasi untuk menyediakan layanan terbaik dan terus berinovasi demi memenuhi kebutuhan klien. Jangan lewatkan kesempatan untuk mengikuti kami di media sosial dan tetap update dengan informasi terbaru, tips, trik, serta promo-promo menarik lainnya. Jadilah bagian dari komunitas kami dan rasakan pengalaman layanan joki yang profesional dan handal bersama Rivi Store!</p>
+        </div>
+        <div id="joki-mlbb" class="section mb-5">
+            <h2>Joki MLBB Ranked/Classic</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Ranked</div>
+                        <div class="card-body">
+                            <button class="btn btn-primary" onclick="togglePriceList('ranked-list')">Lihat Harga</button>
+                            <ul id="ranked-list" class="price-list mt-2">
+                                <li>Warrior: 2K</li>
+                                <li>Elite: 3K</li>
+                                <li>Master: 3K</li>
+                                <li>Grand Master: 4K</li>
+                                <li>Epic: 5K</li>
+                                <li>Legend: 7K</li>
+                                <li>Mythic Romawi: 8K</li>
+                                <li>Mythic Honor: 10K</li>
+                                <li>Mythic Glory: 13K</li>
+                                <li>Mythic Immortal: 20K</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Classic</div>
+                        <div class="card-body">
+                            <button class="btn btn-primary" onclick="togglePriceList('classic-list')">Lihat Harga</button>
+                            <ul id="classic-list" class="price-list mt-2">
+                                <li>Classic Permatch: 5K</li>
+                                <li>Joki Montage Classic: 30K</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">Jasa Mabar VIP</div>
+                        <div class="card-body">
+                            <button class="btn btn-primary" onclick="togglePriceList('mabar-vip-list')">Lihat Harga</button>
+                            <ul id="mabar-vip-list" class="price-list mt-2">
+                                <li>Warrior: 3K</li>
+                                <li>Elite: 4K</li>
+                                <li>Master: 4K</li>
+                                <li>Grand Master: 5K</li>
+                                <li>Epic: 6K</li>
+                                <li>Legend: 8K</li>
+                                <li>Mythic Romawi: 10K</li>
+                                <li>Mythic Honor: 12K</li>
+                                <li>Mythic Glory: 15K</li>
+                                <li>Mythic Immortal: 25K</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="joki-tugas" class="section mb-5">
+            <h2>Joki Tugas Perkuliahan</h2>
+            <ul>
+                <li>Makalah</li>
+                <li>Jurnal</li>
+                <li>PPT</li>
+                <li>Artikel</li>
+                <li>DLL</li>
+            </ul>
+        </div>
+        <div id="top-up" class="section mb-5">
+            <h2>Top Up Game</h2>
+            <ul>
+                <li>Mobile Legends Bang Bang</li>
+                <li>PUBG Mobile</li>
+                <li>Genshin Impact</li>
+            </ul>
+        </div>
+        <div id="aplikasi-murah" class="section mb-5">
+            <h2>Aplikasi Murah</h2>
+            <ul>
+                <li>Netflix Premium</li>
+                <li>Spotify Premium</li>
+                <li>HBO GO</li>
+            </ul>
+        </div>
+        <div id="testimoni" class="section mb-5">
+            <h2>Testimoni</h2>
+            <p>Testimoni pelanggan dalam bentuk gambar...</p>
+        </div>
+        <div id="contact" class="section mb-5">
+            <h2>Contact Us</h2>
+            <p>Hubungi kami melalui WhatsApp, Email, atau Instagram.</p>
+        </div>
+    </div>
+    <footer class="text-center text-lg-start bg-dark text-muted">
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+        </section>
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            JOKIWITH.RIVI STORE
+                        </h6>
+                        <p>
+                            Jasa Joki game dan tugas kuliah terbaik dan terpercaya. Hubungi kami untuk informasi lebih lanjut.
+                        </p>
+                    </div>
+                    <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Peta Situs
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">Beranda</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Masuk</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Daftar</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Cek Transaksi</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Hubungi Kami</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Ulasan</a>
+                        </p>
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Dukungan
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">WhatsApp</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Email</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Instagram</a>
+                        </p>
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">
+                            Social Media
+                        </h6>
+                        <p>
+                            <a href="#!" class="text-reset">Tiktok Takapedia</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Tiktok Takaaa</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Youtube Takassassin</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Instagram Takapedia</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Discord Takapedia</a>
+                        </p>
+                        <p>
+                            <a href="#!" class="text-reset">Venderpedia</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </footer>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
