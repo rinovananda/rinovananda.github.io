@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panduan Cisco Packet Tracer — 4 Switches & Router 2911</title>
+  <meta name="description" content="Panduan langkah-demi-langkah konfigurasi Router 2911, 4 Switch, dan 20 PC di Cisco Packet Tracer. Cocok diunggah ke GitHub.">
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa4b2; --accent:#60a5fa; --glass:rgba(255,255,255,0.03);
+      --code-bg:#06202b; --radius:14px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#071226 0%,#071b2a 100%);color:#e6eef6;line-height:1.5}
+    .container{max-width:1100px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;gap:18px}
+    .logo{width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:22px;box-shadow:0 6px 24px rgba(96,165,250,0.12)}
+    h1{margin:0;font-size:24px}
+    p.lead{color:var(--muted);margin-top:6px}
+
+    main{display:grid;grid-template-columns:1fr 360px;gap:22px;margin-top:28px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:22px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+
+    .section + .section{margin-top:16px}
+    h2{margin:0 0 12px 0;font-size:18px}
+    .muted{color:var(--muted);font-size:14px}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px 12px;text-align:left;font-size:14px}
+    thead th{color:#cfe6ff;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent)}
+    tbody tr{border-top:1px solid rgba(255,255,255,0.02)}
+
+    pre{background:var(--code-bg);padding:14px;border-radius:10px;overflow:auto;font-family:var(--mono);font-size:13px;color:#dff6ff}
+    .code-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer;font-size:13px}
+    .btn:hover{transform:translateY(-1px)}
+
+    /* right column */
+    aside{display:flex;flex-direction:column;gap:14px}
+    .diagram{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:14px;border-radius:12px}
+    .diagram svg{width:100%;height:auto}
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* responsive */
+    @media (max-width:980px){main{grid-template-columns:1fr;}
+      .container{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">PT</div>
+      <div>
+        <h1>Panduan Cisco Packet Tracer — Router 2911 + 4 Switches</h1>
+        <p class="lead">Langkah-demi-langkah lengkap (IP, konfigurasi router, tabel IP PC, dan perintah CLI). Siap di-*copy paste* ke GitHub.</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="section">
+          <h2>Ringkasan Tujuan</h2>
+          <p class="muted">Membagi 20 PC menjadi 4 jaringan (5 PC per switch). Router 2911 bertindak sebagai gateway untuk tiap jaringan (tidak menggunakan VLAN trunking — koneksi langsung interface router ke switch). Subnet yang dipakai bersifat /24 untuk kejelasan.</p>
+        </div>
+
+        <div class="section">
+          <h2>Diagram Topologi (Sederhana)</h2>
+          <p class="muted">Struktur fisik singkat — Router terhubung ke 4 switch, tiap switch punya 5 PC.</p>
+          <pre><code>Router2911
+  /   |   |   \
+S1  S2  S3  S4
+|     |    |    |
+PC.. PC.. PC.. PC..
+(5 pcs each)</code></pre>
+        </div>
+
+        <div class="section">
+          <h2>Alamat IP & Pembagian PC</h2>
+          <p class="muted">Gunakan gateway tiap jaringan sebagai IP interface router. Contoh berikut mudah diikuti untuk di-*paste* ke Packet Tracer.</p>
+
+          <table>
+            <thead>
+              <tr><th>Switch</th><th>Network</th><th>Gateway</th><th>PC (contoh range)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Switch 1</td><td>192.168.1.0/24</td><td>192.168.1.1</td><td>192.168.1.2 — 192.168.1.6</td></tr>
+              <tr><td>Switch 2</td><td>192.168.2.0/24</td><td>192.168.2.1</td><td>192.168.2.2 — 192.168.2.6</td></tr>
+              <tr><td>Switch 3</td><td>192.168.3.0/24</td><td>192.168.3.1</td><td>192.168.3.2 — 192.168.3.6</td></tr>
+              <tr><td>Switch 4</td><td>192.168.4.0/24</td><td>192.168.4.1</td><td>192.168.4.2 — 192.168.4.6</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Langkah 1 — Membangun Topologi di Packet Tracer</h2>
+          <ol class="muted">
+            <li>Tambahkan Router 2911 dan 4 switch (mis: 2960).</li>
+            <li>Tambahkan 20 PC, bagi 5 per switch.</li>
+            <li>Hubungkan Router G0/0 → Switch1, G0/1 → Switch2, G0/2 → Switch3, G0/3 → Switch4 (kabel straight-through).</li>
+            <li>Hubungkan setiap PC ke port switch menggunakan kabel straight-through.</li>
+          </ol>
+        </div>
+
+        <div class="section">
+          <h2>Langkah 2 — Atur IP pada tiap PC</h2>
+          <p class="muted">Klik PC → Desktop → IP Configuration. Masukkan IP dan Default Gateway sesuai tabel di atas (Subnet mask 255.255.255.0).</p>
+
+          <div style="margin-top:10px">
+            <div class="code-header"><strong>Contoh konfigurasi PC (Switch 1, PC1)</strong><button class="btn" data-copy-target="#pc1">Copy</button></div>
+            <pre id="pc1"><code>IP Address: 192.168.1.2
+Subnet Mask: 255.255.255.0
+Default Gateway: 192.168.1.1
+DNS: (kosong atau 8.8.8.8)</code></pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Langkah 3 — Konfigurasi Router (CLI)</h2>
+          <p class="muted">Buka Router → CLI dan masukkan perintah berikut (satu per satu). Interface yang dipakai: GigabitEthernet0/0 sampai 0/3.</p>
+
+          <div class="code-header"><strong>Perintah CLI Router (seluruh interface)</strong><button class="btn" data-copy-target="#routercli">Copy</button></div>
+          <pre id="routercli"><code>enable
+configure terminal
+
+! Interface ke Switch 1
+interface gigabitEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+ exit
+
+! Interface ke Switch 2
+interface gigabitEthernet0/1
+ ip address 192.168.2.1 255.255.255.0
+ no shutdown
+ exit
+
+! Interface ke Switch 3
+interface gigabitEthernet0/2
+ ip address 192.168.3.1 255.255.255.0
+ no shutdown
+ exit
+
+! Interface ke Switch 4
+interface gigabitEthernet0/3
+ ip address 192.168.4.1 255.255.255.0
+ no shutdown
+ exit
+
+end
+write</code></pre>
+
+          <p class="muted">Catatan: Jika router modelmu tidak punya gigabit 4 port, gunakan modul atau sesuaikan port (misal serial/fastEthernet) — ubah nama interface dalam perintah di atas).</p>
+        </div>
+
+        <div class="section">
+          <h2>Langkah 4 — Uji Koneksi</h2>
+          <p class="muted">Dari PC1: buka Command Prompt → ping 192.168.2.2 (PC pada jaringan lain). Jika menerima reply, konfigurasi antar-jaringan berhasil.</p>
+
+          <div class="code-header"><strong>Contoh perintah ping dari PC (Desktop → Command Prompt)</strong><button class="btn" data-copy-target="#ping">Copy</button></div>
+          <pre id="ping"><code>ping 192.168.2.2
+ping 192.168.3.2
+ping 192.168.4.2</code></pre>
+        </div>
+
+        <div class="section">
+          <h2>Tips Troubleshooting Singkat</h2>
+          <ul class="muted">
+            <li>Pastikan interface router <code>no shutdown</code>.</li>
+            <li>Periksa kabel tipe straight-through (PC→Switch dan Router→Switch juga straight di PT).</li>
+            <li>Pastikan Gateway PC sesuai dengan IP interface router di jaringan yang sama.</li>
+            <li>Gunakan <code>show ip interface brief</code> di router untuk melihat status interface.</li>
+            <li>Jika tidak ada reply, coba ping gateway dari PC untuk memastikan koneksi fisik.</li>
+          </ul>
+        </div>
+
+      </section>
+
+      <aside>
+        <div class="card diagram">
+          <h2>Diagram Visual (SVG)</h2>
+          <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="diagram jaringan sederhana">
+            <defs>
+              <style>.r{fill:#7dd3fc;stroke:#0369a1;stroke-width:1.5}.s{fill:#60a5fa;stroke:#063b6b;stroke-width:1}.p{fill:#c7f9ff;stroke:#084b62;stroke-width:0.8;font-size:12px;font-family:Arial}</style>
+            </defs>
+            <!-- Router -->
+            <rect x="260" y="18" rx="10" ry="10" width="80" height="40" class="r" />
+            <text x="300" y="43" text-anchor="middle" fill="#012" font-weight="700">Router</text>
+
+            <!-- Switches -->
+            <rect x="40" y="120" rx="8" width="110" height="34" class="s" />
+            <text x="95" y="143" text-anchor="middle" fill="#012">Switch 1</text>
+
+            <rect x="190" y="120" rx="8" width="110" height="34" class="s" />
+            <text x="245" y="143" text-anchor="middle" fill="#012">Switch 2</text>
+
+            <rect x="340" y="120" rx="8" width="110" height="34" class="s" />
+            <text x="395" y="143" text-anchor="middle" fill="#012">Switch 3</text>
+
+            <rect x="490" y="120" rx="8" width="110" height="34" class="s" />
+            <text x="545" y="143" text-anchor="middle" fill="#012">Switch 4</text>
+
+            <!-- Lines -->
+            <line x1="300" y1="58" x2="95" y2="120" stroke="#9ccffb" stroke-width="1.5" />
+            <line x1="300" y1="58" x2="245" y2="120" stroke="#9ccffb" stroke-width="1.5" />
+            <line x1="300" y1="58" x2="395" y2="120" stroke="#9ccffb" stroke-width="1.5" />
+            <line x1="300" y1="58" x2="545" y2="120" stroke="#9ccffb" stroke-width="1.5" />
+
+            <!-- PCs small circles under each switch -->
+            <!-- Switch1 PCs -->
+            <g fill="#dff6ff">
+              <circle cx="50" cy="180" r="6"/>
+              <circle cx="80" cy="180" r="6"/>
+              <circle cx="110" cy="180" r="6"/>
+              <circle cx="140" cy="180" r="6"/>
+              <circle cx="170" cy="180" r="6"/>
+              <text x="110" y="200" class="p" fill="#012" text-anchor="middle">PCs x5</text>
+            </g>
+
+            <!-- Switch2 PCs -->
+            <g fill="#dff6ff" transform="translate(150,0)">
+              <circle cx="50" cy="180" r="6"/>
+              <circle cx="80" cy="180" r="6"/>
+              <circle cx="110" cy="180" r="6"/>
+              <circle cx="140" cy="180" r="6"/>
+              <circle cx="170" cy="180" r="6"/>
+            </g>
+
+            <!-- Switch3 PCs -->
+            <g fill="#dff6ff" transform="translate(300,0)">
+              <circle cx="50" cy="180" r="6"/>
+              <circle cx="80" cy="180" r="6"/>
+              <circle cx="110" cy="180" r="6"/>
+              <circle cx="140" cy="180" r="6"/>
+              <circle cx="170" cy="180" r="6"/>
+            </g>
+
+            <!-- Switch4 PCs -->
+            <g fill="#dff6ff" transform="translate(450,0)">
+              <circle cx="50" cy="180" r="6"/>
+              <circle cx="80" cy="180" r="6"/>
+              <circle cx="110" cy="180" r="6"/>
+              <circle cx="140" cy="180" r="6"/>
+              <circle cx="170" cy="180" r="6"/>
+            </g>
+
+          </svg>
+
+          <p class="muted" style="margin-top:10px">Gunakan diagram ini sebagai referensi visual saat membuat topologi di Packet Tracer.</p>
+        </div>
+
+        <div class="card">
+          <h2>Ringkasan Perintah Penting</h2>
+          <p class="muted">Perintah berguna di Router untuk troubleshooting dan verifikasi.</p>
+          <pre><code>show ip interface brief
+show running-config
+show interfaces
+ping [ip-address]
+traceroute [ip-address] (jika tersedia)</code></pre>
+        </div>
+
+        <div class="card">
+          <h2>Siap di-GitHub?</h2>
+          <p class="muted">File HTML ini siap di-*copy* ke repo GitHub. Nama file saran: <code>README-packettracer-4-switches.html</code> atau <code>packettracer-4-switches.html</code>. Kalau mau, saya juga bisa bantu versi README.md (Markdown) agar tampil rapi di GitHub.</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div class="muted">Dibuat otomatis — silakan salin isi file HTML ini ke repository GitHub kamu. Mau saya buatkan juga versi Markdown (README.md)?</div>
+    </footer>
+  </div>
+
+  <script>
+    // copy button logic
+    document.querySelectorAll('.btn').forEach(btn=>{
+      btn.addEventListener('click',async()=>{
+        const sel = document.querySelector(btn.dataset.copyTarget);
+        if(!sel) return;
+        try{
+          await navigator.clipboard.writeText(sel.innerText);
+          btn.innerText = 'Copied!';
+          setTimeout(()=>btn.innerText='Copy',1200);
+        }catch(e){
+          alert('Gagal copy. Silakan blok teks dan tekan Ctrl+C.');
+        }
+      })
+    })
+  </script>
+</body>
+</html>
