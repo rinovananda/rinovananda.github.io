@@ -3,78 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio - Rinov Ananda Ramadana | Digital Problem Solver</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <title>Rinov Ananda Ramadana - Digital Polymath Portfolio</title>
+    <!-- Load Tailwind CSS CDN untuk styling yang cepat dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load AOS (Animate On Scroll) Library untuk interaksi saat menggulir -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"/>
-
+    <style>
+        /* Menggunakan Font Inter dan mengatur latar belakang gelap global */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Very dark background */
+            color: #e5e7eb; /* Light grey text */
+        }
+        /* Custom class untuk latar belakang header yang konsisten gelap */
+        .header-bg {
+            background-color: #1f2937;
+        }
+        /* Style untuk penanda foto */
+        .photo-placeholder {
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #4b5563; /* Darker dash line */
+            background-color: #374151; /* Darker background for placeholder */
+            color: #9ca3af;
+            text-align: center;
+            padding: 20px;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s;
+        }
+        .photo-placeholder:hover {
+            background-color: #4b5563;
+        }
+        /* Hover effect pada kartu skill */
+        .skill-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 0.75rem;
+        }
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5); /* Stronger shadow on dark mode */
+        }
+        /* Pastikan slide tidak terlihat saat opacity 0 */
+        .slider-image.hidden-slide {
+            opacity: 0 !important;
+            z-index: 1;
+        }
+        /* Pastikan slide aktif terlihat */
+        .slider-image.active-slide {
+            opacity: 1 !important;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 
-    <script src="script.js"></script>
-    
+    <!-- HEADER (Navigation) -->
+    <header id="main-header" class="header-bg text-white shadow-xl sticky top-0 z-50 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold tracking-wider text-cyan-400">Rinov Ananda R.</div>
+            
+            <!-- Desktop Navigation -->
+            <nav id="desktop-nav" class="space-x-6 hidden md:block">
+                <a href="#tentang" class="hover:text-cyan-400 transition duration-300">Tentang</a>
+                <a href="#keahlian" class="hover:text-cyan-400 transition duration-300">Keahlian</a>
+                <a href="#pengalaman" class="hover:text-cyan-400 transition duration-300">Pengalaman</a>
+                <a href="#portofolio" class="hover:text-cyan-400 transition duration-300">Karya</a>
+            </nav>
+            
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg text-cyan-400 hover:bg-gray-700 transition duration-300">
+                <!-- SVG untuk Hamburger Icon -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path id="menu-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+
+            <!-- Tombol Kontak Desktop -->
+            <a href="mailto:emailanda@example.com" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-semibold py-2 px-4 rounded-lg transition duration-300 shadow-lg hidden md:block">
+                Hubungi Saya
+            </a>
+            <!-- Tombol Kontak Mobile -->
+            <a href="mailto:emailanda@example.com" class="bg-cyan-500 hover:bg-cyan-600 text-gray-900 font-semibold py-2 px-4 rounded-lg transition duration-300 shadow-lg md:hidden">
+                Kontak
+            </a>
+        </div>
+    </header>
+
+    <!-- Mobile Menu (Tersembunyi secara default) -->
+    <div id="mobile-menu" class="hidden header-bg md:hidden border-b border-gray-700">
+        <nav class="flex flex-col space-y-2 p-4 text-center">
+            <!-- Menambahkan class 'mobile-link' untuk JavaScript -->
+            <a href="#tentang" class="mobile-link block py-2 text-white hover:text-cyan-400 transition duration-300 rounded-lg hover:bg-gray-700">Tentang</a>
+            <a href="#keahlian" class="mobile-link block py-2 text-white hover:text-cyan-400 transition duration-300 rounded-lg hover:bg-gray-700">Keahlian</a>
+            <a href="#pengalaman" class="mobile-link block py-2 text-white hover:text-cyan-400 transition duration-300 rounded-lg hover:bg-gray-700">Pengalaman</a>
+            <a href="#portofolio" class="mobile-link block py-2 text-white hover:text-cyan-400 transition duration-300 rounded-lg hover:bg-gray-700">Karya</a>
+        </nav>
+    </div>
+
+    <!-- HERO SECTION (Perkenalan Diri) -->
+    <section id="hero" class="pt-24 pb-32 header-bg text-white border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-10">
+                <!-- Kolom Kiri: Foto Profil (Animasi Fade-Right) -->
+                <div data-aos="fade-right" data-aos-duration="1000" class="w-full md:w-1/3 flex justify-center">
+                    <div class="w-64 h-64 rounded-full overflow-hidden border-4 border-cyan-500 shadow-2xl">
+                        <!-- MARKER: GANTI DENGAN FOTO PROFIL ANDA -->
+                        <img src="https://placehold.co/256x256/22d3ee/1f2937?text=Rinov" alt="Foto Profil Rinov" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/256x256/22d3ee/1f2937?text=Rinov';">
+                        <!-- MARKER: Anda bisa mengganti 'src' di atas dengan URL foto profil profesional Anda -->
+                    </div>
+                </div>
+                <!-- Kolom Kanan: Teks Intro (Animasi Fade-Left) -->
+                <div data-aos="fade-left" data-aos-duration="1000" class="w-full md:w-2/3 text-center md:text-left">
+                    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-4 leading-tight">
+                        Rinov Ananda Ramadana
+                    </h1>
+                    <p class="text-cyan-400 text-xl sm:text-3xl font-medium mb-8">
+                        Digital Polymath & Tech Enthusiast
+                    </p>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto md:mx-0">
+                        Lulusan Teknik Komputer Jaringan (SMKN 1 Sigli) yang kini menempuh studi S-1 di Universitas Jabal Ghafur. Saya memiliki semangat besar dalam menjelajahi dunia digital, berprinsip "serba bisa" karena didorong oleh rasa ingin tahu dan kecepatan belajar.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TENTANG SAYA & Pendidikan -->
+    <section id="tentang" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h2 data-aos="fade-down" class="text-3xl font-bold text-gray-100 mb-8 text-center border-b-2 border-cyan-500 pb-2">Tentang Saya</h2>
+            <div data-aos="fade-up" class="space-y-6 text-gray-300 text-lg">
+                <p>
+                    Kecintaan saya pada dunia komputer telah tumbuh sejak kecil. Hal ini mendorong saya untuk terus menggali berbagai aspek teknologi dan digital. Dengan latar belakang pendidikan Teknik Komputer Jaringan dan kini menempuh S-1, saya tidak hanya menguasai teori, tetapi juga praktik lapangan yang sangat beragam.
+                </p>
+                <p>
+                    Saya bangga menjadi sosok yang cepat belajar dan serba bisa (Digital Polymath), yang memungkinkan saya menangani tantangan yang luas—mulai dari teknis hardware/software hingga produksi konten akademik dan digital, seperti yang tercermin dari pengalaman freelance (joki) perkuliahan saya.
+                </p>
+            </div>
+            
+            <h3 data-aos="fade-right" class="text-2xl font-semibold text-gray-100 mt-12 mb-6 border-l-4 border-cyan-500 pl-3">Riwayat Pendidikan</h3>
+            <div class="space-y-4">
+                <div data-aos="fade-up" data-aos-delay="100" class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
+                    <p class="font-bold text-gray-100">S-1 (Sedang Berjalan)</p>
+                    <p class="text-cyan-400">Universitas Jabal Ghafur</p>
+                    <p class="text-sm text-gray-400">Program Studi / Tahun Mulai</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="200" class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
+                    <p class="font-bold text-gray-100">Teknik Komputer Jaringan (Lulus)</p>
+                    <p class="text-cyan-400">SMKN 1 Sigli</p>
+                    <p class="text-sm text-gray-400">Jurusan / Tahun Lulus</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KEAHLIAN DAN VERSATILITAS -->
+    <section id="keahlian" class="py-20 bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 data-aos="fade-down" class="text-3xl font-bold text-gray-100 mb-12 text-center border-b-2 border-cyan-500 pb-2">Keahlian Teknis & Jasa Digital (Joki)</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Skill Set 1 (Animasi Fade-Up dengan Delay) -->
+                <div data-aos="fade-up" data-aos-delay="100" class="skill-card bg-gray-900 p-6 rounded-xl shadow-xl border-t-4 border-blue-500">
+                    <div class="text-4xl text-blue-400 mb-3">🛠️</div> 
+                    <h3 class="text-xl font-semibold text-gray-100 mb-3">Sistem & Perangkat</h3>
+                    <p class="text-gray-400 mb-4 text-sm">Mampu menangani berbagai masalah perangkat keras dan lunak dengan efisien.</p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Instalasi ulang semua versi Windows OS.</li>
+                        <li>Instalasi dan troubleshooting game PS & Android.</li>
+                        <li>Pengelolaan sistem Android (Custom ROM, Rooting).</li>
+                        <li>Backup dan pemulihan data.</li>
+                        <li>Menguasai aplikasi Microsoft Office.</li>
+                    </ul>
+                </div>
+
+                <!-- Skill Set 2 (Animasi Fade-Up dengan Delay) -->
+                <div data-aos="fade-up" data-aos-delay="300" class="skill-card bg-gray-900 p-6 rounded-xl shadow-xl border-t-4 border-green-500">
+                    <div class="text-4xl text-green-400 mb-3">📝</div>
+                    <h3 class="text-xl font-semibold text-gray-100 mb-3">Produksi Konten & Akademik</h3>
+                    <p class="text-gray-400 mb-4 text-sm">Menyediakan jasa penulisan ilmiah dan pembuatan materi perkuliahan/digital.</p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Penulisan ilmiah (Makalah, Jurnal, Laporan).</li>
+                        <li>Pembuatan presentasi (PowerPoint).</li>
+                        <li>Pembuatan Aplikasi sederhana & Codingan (sesuai request).</li>
+                        <li>Desain Grafis dasar (untuk kebutuhan akademik/konten).</li>
+                    </ul>
+                </div>
+
+                <!-- Skill Set 3 (Animasi Fade-Up dengan Delay) -->
+                <div data-aos="fade-up" data-aos-delay="500" class="skill-card bg-gray-900 p-6 rounded-xl shadow-xl border-t-4 border-cyan-500">
+                    <div class="text-4xl text-cyan-400 mb-3">📊</div>
+                    <h3 class="text-xl font-semibold text-gray-100 mb-3">Organisasi & Pengelolaan Data</h3>
+                    <p class="text-gray-400 mb-4 text-sm">Berpengalaman dalam pengelolaan data strategis dan operasional.</p>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm">
+                        <li>Manajemen data operasional harian.</li>
+                        <li>Pengarsipan dan pemeliharaan sistem.</li>
+                        <li>Pengelolaan data politik dan hasil pemilihan.</li>
+                        <li>Mampu bekerja di lingkungan tekanan tinggi (pemilu).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PENGALAMAN KERJA/ORGANISASI -->
+    <section id="pengalaman" class="py-20 bg-gray-900">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h2 data-aos="fade-down" class="text-3xl font-bold text-gray-100 mb-12 text-center border-b-2 border-cyan-500 pb-2">Pengalaman Profesional</h2>
+            
+            <!-- Timeline Item 1 (Animasi Fade-Right) -->
+            <div data-aos="fade-right" class="relative mb-12 pl-10 md:pl-16">
+                <div class="absolute left-3 md:left-6 w-0.5 bg-cyan-500 h-full"></div>
+                <div class="absolute left-0 md:left-3 w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center text-gray-900 font-bold text-sm">1</div>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-xl ml-4 border border-gray-700">
+                    <h3 class="text-xl font-bold text-gray-100">Operator Kabupaten - Partai Adil Sejahtera Aceh (PAS)</h3>
+                    <p class="text-cyan-400 font-medium">Periode 2 Tahun (Pemilu 2024)</p>
+                    <p class="text-gray-300 mt-2">
+                        Bertanggung jawab penuh dalam mengelola semua data Calon Legislatif (Caleg) mulai dari tahap awal hingga akhir pemilihan, memastikan akurasi data strategis.
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-gray-400 mt-2">
+                        <li>Manajemen dan pemeliharaan data Caleg.</li>
+                        <li>Kontribusi data yang akurat, membantu 2 Caleg lolos menjadi anggota dewan di **DPRK Pidie** dan **DPRA Aceh**.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Timeline Item 2 (Animasi Fade-Left) -->
+            <div data-aos="fade-left" class="relative mb-8 pl-10 md:pl-16">
+                <div class="absolute left-3 md:left-6 w-0.5 bg-cyan-500 h-full"></div>
+                <div class="absolute left-0 md:left-3 w-6 h-6 rounded-full bg-cyan-500 flex items-center justify-center text-gray-900 font-bold text-sm">2</div>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-xl ml-4 border border-gray-700">
+                    <h3 class="text-xl font-bold text-gray-100">Operator Lembaga - LPI Dayah Asasul Iman Al-Aziziyah</h3>
+                    <p class="text-cyan-400 font-medium">Selama Masa Mengaji</p>
+                    <p class="text-gray-300 mt-2">
+                        Bertugas sebagai operator lembaga, membantu pengelolaan data administrasi dan operasional dayah, menunjukkan kemampuan dalam lingkungan non-formal.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- PORTOFOLIO / GALERI KARYA (Lebih Rinci) -->
+    <section id="portofolio" class="py-20 bg-gray-800">
+        <div class="container mx-auto px-4">
+            <h2 data-aos="fade-down" class="text-3xl font-bold text-gray-100 mb-12 text-center border-b-2 border-cyan-500 pb-2">Galeri Karya (Portofolio Visual)</h2>
+            <p data-aos="fade-up" class="text-center text-gray-400 mb-10 max-w-2xl mx-auto">
+                Bukti visual dari peran ganda saya, dari operator politik hingga penyedia jasa digital dan teknis.
+            </p>
+
+            <!-- Kategori 1: Pengalaman Organisasi & Data Politik (Grid 4 Kolom) -->
+            <h3 data-aos="fade-up" class="text-2xl font-semibold text-gray-100 mt-12 mb-6 border-l-4 border-cyan-500 pl-3">I. Dokumentasi Data & Organisasi (Pemilu 2024)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Slot 1: KIP Pidie Foto Resmi 1 -->
+                <div data-aos="zoom-in" data-aos-delay="100" class="photo-placeholder">
+                    <span class="font-bold text-lg">Foto Resmi KIP Pidie 1</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan foto KIP Pidie)</span>
+                </div>
+
+                <!-- Slot 2: KIP Pidie Foto Resmi 2 -->
+                <div data-aos="zoom-in" data-aos-delay="200" class="photo-placeholder">
+                    <span class="font-bold text-lg">Foto Resmi KIP Pidie 2</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan foto KIP Pidie)</span>
+                </div>
+
+                <!-- Slot 3: Ucapan Selamat DPRK Waled Balia -->
+                <div data-aos="zoom-in" data-aos-delay="300" class="photo-placeholder">
+                    <span class="font-bold text-lg">Ucapan Selamat DPRK Pidie (Waled Balia)</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan foto ucapan selamat Waled Balia)</span>
+                </div>
+
+                <!-- Slot 4: Foto Bersama DPRK/DPRA (Aminuddin & Nura) -->
+                <div data-aos="zoom-in" data-aos-delay="400" class="photo-placeholder">
+                    <span class="font-bold text-lg">Foto Bersama Petinggi PAS Lolos (Aminuddin & Alm. Nura)</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan foto bersama Waled Aminuddin & Alm. Waled Nura)</span>
+                </div>
+
+            </div>
+
+            <!-- Kategori 2: Jasa Akademik (Joki) & Desain (Grid 2 Kolom) -->
+            <h3 data-aos="fade-up" class="text-2xl font-semibold text-gray-100 mt-12 mb-6 border-l-4 border-cyan-500 pl-3">II. Jasa Akademik (Penulisan, Desain & Testimoni)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Slot 5: Penulisan Ilmiah & PPT -->
+                <div data-aos="zoom-in" data-aos-delay="100" class="photo-placeholder">
+                    <a href="URL_KE_FILE_MAKALAH" target="_blank" class="block w-full text-cyan-400 hover:text-cyan-300">
+                        <span class="font-bold text-lg">Contoh File Jurnal/Laporan/PPT Klien</span>
+                        <br><span class="text-sm text-gray-400">(Ganti 'photo-placeholder' dengan tampilan file atau tautan)</span>
+                    </a>
+                </div>
+
+                <!-- Slot 6: Screenshot Testimoni Jasa Akademik -->
+                <div data-aos="zoom-in" data-aos-delay="200" class="photo-placeholder">
+                    <span class="font-bold text-lg">Screenshot Chat Testimoni Klien Jasa Akademik</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan SS Chat setelah pengiriman file)</span>
+                </div>
+
+            </div>
+
+            <!-- Kategori 3: Jasa Teknis & Gaming (Grid 2 Kolom) -->
+            <h3 data-aos="fade-up" class="text-2xl font-semibold text-gray-100 mt-12 mb-6 border-l-4 border-cyan-500 pl-3">III. Jasa Teknis (Install OS) & Gaming (Joki ML)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Slot 7: Foto Device Install OS/Root -->
+                <div data-aos="zoom-in" data-aos-delay="100" class="photo-placeholder p-4">
+                    <span class="font-bold text-lg">Foto Device Saat Instalasi OS/Rooting HP</span>
+                    <br><span class="text-sm text-gray-400">(MARKER FOTO: Ganti dengan foto device yang sedang diinstall/di-root)</span>
+                </div>
+
+                <!-- Slot 8 (SLIDER): Joki ML Screenshot Hasil -->
+                <div data-aos="zoom-in" data-aos-delay="200" class="bg-gray-700 p-4 rounded-xl shadow-2xl relative overflow-hidden">
+                    <h4 class="text-lg font-bold text-cyan-400 mb-4 text-center">Prestasi Esports MLBB (Puluhan Foto Juara)</h4>
+                    
+                    <!-- Slider Container -->
+                    <div id="mlbb-slider" class="relative w-full h-64 sm:h-80 overflow-hidden rounded-lg border-2 border-gray-600">
+                        
+                        <!-- MARKER FOTO SLIDER: Tambahkan tag <img> di sini. Yang pertama harus memiliki kelas `active-slide`! -->
+                        
+                        <!-- Contoh Slot Foto 1 (Harus ada kelas active-slide untuk yang pertama) -->
+                        <img class="slider-image absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 active-slide" src="https://placehold.co/800x450/22d3ee/1f2937?text=JUARA+MLBB+FOTO+1" alt="Foto Juara MLBB 1" onerror="this.onerror=null; this.src='https://placehold.co/800x450/22d3ee/1f2937?text=GANTI+DENGAN+FOTO+ASLI';">
+
+                        <!-- Contoh Slot Foto 2 (Gunakan kelas hidden-slide) -->
+                        <img class="slider-image absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 hidden-slide" src="https://placehold.co/800x450/4ade80/1f2937?text=JUARA+MLBB+FOTO+2" alt="Foto Juara MLBB 2" onerror="this.onerror=null; this.src='https://placehold.co/800x450/4ade80/1f2937?text=GANTI+DENGAN+FOTO+ASLI';">
+
+                        <!-- Contoh Slot Foto 3 (Gunakan kelas hidden-slide) -->
+                        <img class="slider-image absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 hidden-slide" src="https://placehold.co/800x450/fb923c/1f2937?text=JUARA+MLBB+FOTO+3" alt="Foto Juara MLBB 3" onerror="this.onerror=null; this.src='https://placehold.co/800x450/fb923c/1f2937?text=GANTI+DENGAN+FOTO+ASLI';">
+                        
+                        <!-- Tambahkan puluhan foto Anda di sini dengan kelas: slider-image absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 hidden-slide -->
+                        
+                        <!-- Previous Button -->
+                        <button onclick="changeSlide(-1)" class="absolute top-1/2 -translate-y-1/2 left-0 z-20 p-3 bg-black bg-opacity-50 text-white rounded-r-lg hover:bg-opacity-75 transition duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        
+                        <!-- Next Button -->
+                        <button onclick="changeSlide(1)" class="absolute top-1/2 -translate-y-1/2 right-0 z-20 p-3 bg-black bg-opacity-50 text-white rounded-l-lg hover:bg-opacity-75 transition duration-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+
+                    <p class="text-sm text-gray-400 mt-4 text-center">
+                        Tampilkan puluhan foto juara Anda di sini dengan fitur *slide*.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="header-bg text-gray-400 py-8 border-t border-gray-700">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Rinov Ananda Ramadana. Built with Versatility.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <!-- Ganti # dengan tautan media sosial/kontak Anda -->
+                <a href="https://linkedin.com/in/profilanda" target="_blank" class="hover:text-cyan-400 transition duration-300">
+                    LinkedIn
+                </a>
+                <a href="https://github.com/akunanda" target="_blank" class="hover:text-cyan-400 transition duration-300">
+                    GitHub
+                </a>
+                <a href="mailto:emailanda@example.com" class="hover:text-cyan-400 transition duration-300">
+                    Email
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT UNTUK INTERAKTIF, SMOOTH SCROLLING, DAN AOS INIT -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-      AOS.init({
-          disable: 'mobile' 
-      });
-    </script>
+        // --- GLOBAL SLIDER VARIABLES ---
+        let slideIndex = 0; // Mulai dari slide pertama (indeks 0)
+        let slides = [];
+        const sliderContainer = document.getElementById('mlbb-slider');
 
-    <script>
-        $(document).ready(function(){
-            $('.testimoni-slider').slick({
-                dots: true,
-                infinite: true,
-                speed: 500,
-                slidesToShow: 3, // Tampilkan 3 slide di desktop
-                slidesToScroll: 1,
-                autoplay: true,
-                autoplaySpeed: 3000,
-                responsive: [
-                    {
-                        breakpoint: 1024,
-                        settings: {
-                            slidesToShow: 2, // Tampilkan 2 slide di tablet
-                            slidesToScroll: 1,
-                            infinite: true,
-                            dots: true
-                        }
-                    },
-                    {
-                        breakpoint: 600,
-                        settings: {
-                            slidesToShow: 1, // Tampilkan 1 slide di mobile
-                            slidesToScroll: 1
-                        }
-                    }
-                ]
+        function showSlide(n) {
+            if (slides.length === 0) return;
+
+            // Reset index jika melebihi batas
+            if (n >= slides.length) { 
+                slideIndex = 0; 
+            }
+            if (n < 0) { 
+                slideIndex = slides.length - 1; 
+            }
+
+            // Sembunyikan semua slide dan hapus kelas aktif
+            slides.forEach(slide => {
+                slide.classList.remove('active-slide');
+                slide.classList.add('hidden-slide');
             });
 
-            $('.portofolio-slider').slick({
-                dots: true,
-                infinite: true,
-                speed: 500,
-                slidesToShow: 2, // Tampilkan 2 slide di desktop
-                slidesToScroll: 1,
-                autoplay: true,
-                autoplaySpeed: 4000,
-                responsive: [
-                    {
-                        breakpoint: 768,
-                        settings: {
-                            slidesToShow: 1, // Tampilkan 1 slide di mobile
-                            slidesToScroll: 1
+            // Tampilkan slide yang aktif
+            slides[slideIndex].classList.remove('hidden-slide');
+            slides[slideIndex].classList.add('active-slide');
+        }
+
+        function changeSlide(n) {
+            slideIndex += n;
+            showSlide(slideIndex);
+        }
+        // --- END SLIDER FUNGSI ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- INISIALISASI AOS ---
+            AOS.init({
+                offset: 120, 
+                delay: 0, 
+                duration: 800, 
+                easing: 'ease', 
+                once: false, // Animasi muncul saat scroll ke atas/bawah
+            });
+
+            // --- FUNGSI SLIDER INIT ---
+            if (sliderContainer) {
+                // Ambil semua elemen gambar di dalam slider
+                slides = Array.from(sliderContainer.querySelectorAll('.slider-image'));
+                
+                // Set slide pertama sebagai aktif
+                if (slides.length > 0) {
+                    slides[0].classList.add('active-slide');
+                    slides[0].classList.remove('hidden-slide');
+                }
+            }
+
+
+            // --- FUNGSI NAVIGASI ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const navLinks = document.querySelectorAll('#desktop-nav a[href^="#"], .mobile-link[href^="#"]');
+            const menuIconPath = document.getElementById('menu-icon-path');
+
+            // FUNGSI 1: MOBILE MENU TOGGLE
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    
+                    if (mobileMenu.classList.contains('hidden')) {
+                        menuIconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+                    } else {
+                        menuIconPath.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+                    }
+                });
+            }
+
+            // FUNGSI 2: SMOOTH SCROLLING
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    
+                    if (href && href.startsWith('#') && href.length > 1) {
+                        e.preventDefault();
+                        
+                        const targetElement = document.querySelector(href);
+                        
+                        if (targetElement) {
+                            // Tutup menu mobile
+                            if (!mobileMenu.classList.contains('hidden')) {
+                                mobileMenu.classList.add('hidden');
+                                menuIconPath.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+                            }
+
+                            const headerHeight = document.getElementById('main-header').offsetHeight;
+                            const targetPosition = targetElement.offsetTop - headerHeight;
+
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
                         }
                     }
-                ]
+                });
             });
         });
     </script>
+
 </body>
 </html>
