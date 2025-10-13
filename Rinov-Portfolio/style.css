@@ -63,6 +63,7 @@ nav {
 
 /* HEADER/HERO SECTION */
 #hero {
+    /* Ganti 'hero_background.jpg' dengan gambar yang sesuai di folder 'assets/' */
     background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/hero_background.jpg') no-repeat center center/cover;
     height: 60vh;
     display: flex;
@@ -108,13 +109,28 @@ nav {
     border-radius: 50px;
     font-weight: bold;
     transition: background-color 0.3s;
+    /* Animasi: 'pulse' untuk menarik perhatian */
+    animation: pulse 2s infinite;
 }
 
 .cta-button:hover {
     background-color: #ffc107;
 }
 
-/* MAIN CONTENT DAN CARD */
+/* KEYFRAMES PULSE */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(255, 179, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 179, 0, 0);
+    }
+}
+
+/* MAIN CONTENT DAN CARD (Shadow lebih dalam dan transisi) */
 main {
     max-width: 1200px;
     margin: 40px auto;
@@ -125,8 +141,13 @@ main {
     background: white;
     padding: 30px;
     margin-bottom: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 12px; /* Lebih membulat */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Shadow lebih kuat */
+    transition: transform 0.4s ease-out; /* Transisi saat hover */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Sedikit naik saat di-hover */
 }
 
 h2 {
@@ -151,7 +172,8 @@ h2 i {
 .skill-item {
     padding: 20px;
     background: #e8eaf6; /* Latar belakang skill yang berbeda */
-    border-radius: 5px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s, background-color 0.3s;
 }
 
 .skill-item h3 {
@@ -164,11 +186,21 @@ h2 i {
     margin-left: 20px;
 }
 
-/* PENGALAMAN */
+.skill-item:hover {
+    background-color: #d1d5e9; /* Sedikit lebih gelap */
+    box-shadow: 0 5px 15px rgba(26, 35, 126, 0.2); /* Shadow warna biru */
+}
+
+/* PENGALAMAN (Garis tepi animasi) */
 .pengalaman-item {
     margin-bottom: 20px;
-    border-left: 4px solid #ffb300;
-    padding-left: 15px;
+    border-left: 5px solid #ffb300; /* Garis lebih tebal */
+    padding-left: 20px;
+    transition: border-color 0.4s;
+}
+
+.pengalaman-item:hover {
+    border-left-color: #1a237e; /* Ganti warna garis saat hover */
 }
 
 .pengalaman-item h3 {
@@ -187,14 +219,16 @@ h2 i {
     height: 70px;
     object-fit: cover;
     border-radius: 4px;
-    transition: transform 0.3s;
+    filter: grayscale(80%); /* Sedikit hitam putih */
+    transition: transform 0.3s, filter 0.3s;
 }
 
 .mini-img:hover {
-    transform: scale(1.05);
+    transform: scale(1.1); /* Zoom lebih besar saat hover */
+    filter: grayscale(0%); /* Kembali berwarna penuh */
 }
 
-/* PORTOFOLIO PROYEK */
+/* PORTOFOLIO PROYEK (Efek 3D pada hover) */
 .galeri-proyek {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -209,11 +243,13 @@ h2 i {
     overflow: hidden;
     text-align: center;
     transition: transform 0.3s, box-shadow 0.3s;
+    transform: perspective(1000px) rotateY(0deg); /* Persiapan 3D */
 }
 
 .proyek-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: perspective(1000px) rotateY(5deg) scale(1.05); /* Sedikit miring dan membesar */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); 
+    z-index: 10;
 }
 
 .proyek-item img {
@@ -269,11 +305,12 @@ footer {
     color: white;
     font-size: 1.8rem;
     margin: 0 10px;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s;
 }
 
 .social-links a:hover {
     color: #ffb300;
+    transform: translateY(-5px) scale(1.1); /* Ikon melompat sedikit */
 }
 
 .copy {
