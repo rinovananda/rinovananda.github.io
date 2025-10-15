@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Pemesanan Rivi Services</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Mengatur font agar lebih modern dan mudah dibaca */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            overflow: hidden; /* Sembunyikan scrollbar selama splash screen */
+        }
+        /* Custom style untuk tombol yang lebih menarik */
+        .primary-btn {
+            background-image: linear-gradient(to right, #4F46E5 0%, #3B82F6 100%);
+            transition: all 0.3s ease;
+        }
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px 0 rgba(66, 153, 225, 0.75);
+        }
+        
+        /* Gaya untuk tombol pilihan layanan */
+        .service-btn {
+            transition: all 0.2s ease-out; /* Tambahkan transisi untuk animasi */
+        }
+        .service-btn:active {
+            transform: scale(0.98);
+            box-shadow: none;
+        }
+
+        /* CSS untuk Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #3f3f46; /* Warna latar belakang logo (ungu tua) */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease-out; /* Animasi fade lebih lama */
+        }
+        .splash-fade {
+            opacity: 0 !important;
+            visibility: hidden;
+        }
+        
+        /* Gaya untuk Kontainer Logo - Menggunakan data gambar yang Anda berikan */
+        .logo-container {
+            width: 150px;
+            height: 150px;
+            /* Placeholder untuk logo Anda */
+            background-color: #fde047; /* Warna kuning dari logo */
+            border-radius: 20px;
+            border: 5px solid #3f3f46; /* Border ungu tua */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-15px);}
+            60% {transform: translateY(-7px);}
+        }
+        
+        .logo-icon {
+            font-size: 3rem;
+            line-height: 1;
+            color: #3f3f46; /* Warna ikon ungu tua */
+        }
+        .logo-text {
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: #3f3f46;
+            margin-top: 5px;
+        }
+        .logo-subtext {
+            font-size: 0.75rem;
+            color: #3f3f46;
+            font-weight: 500;
+        }
+
+        /* Notifikasi Sukses Mengirim */
+        #success-message {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .show-success {
+            opacity: 1 !important;
+        }
+        
+        /* FIX: Tambahkan z-index sangat tinggi untuk tombol di splash screen */
+        .splash-button-fix {
+            z-index: 2000; 
+            position: relative; /* Memastikan z-index bekerja */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-start justify-center p-4 sm:p-8">
+
+    <!-- 1. SPLASH SCREEN (Animasi Pembuka - Interaktif dengan Tombol) -->
+    <div id="splash-screen">
+        <div class="logo-container">
+            <!-- Representasi Simpel Logo Rivi Joki -->
+            <div class="logo-icon">👥</div>
+            <div class="logo-text">RIVI JOKI</div>
+            <div class="logo-subtext">MLBB & Tugas</div>
+        </div>
+        <div class="max-w-md p-4 text-center">
+            <h2 class="text-3xl font-extrabold text-yellow-300 mb-2">Welcome to Pengisian Form Joki by RIVI!</h2>
+            <p class="text-white text-lg mt-4 font-semibold mb-6">
+                Ini adalah alat bantu untuk mempermudah Anda mengisi detail pesanan.
+            </p>
+            <!-- Tombol yang sekarang memiliki kelas perbaikan z-index -->
+            <button onclick="hideSplashScreen()" class="splash-button-fix bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300">
+                GAS ISI FORM
+            </button>
+        </div>
+    </div>
+    
+    <!-- 2. KONTEN UTAMA (Awalnya tersembunyi) -->
+    <div id="app-container" class="w-full max-w-xl bg-white rounded-xl shadow-2xl p-6 sm:p-8 space-y-6 opacity-0 transition-opacity duration-500">
+
+        <!-- Header dan Pilihan Layanan -->
+        <header class="text-center pb-4 border-b border-gray-100">
+            <!-- Logo di Header Web -->
+            <div class="flex flex-col items-center mb-3">
+                <div class="logo-container !w-16 !h-16 !p-0 !rounded-lg !border-2">
+                     <div class="logo-icon !text-xl">👥</div>
+                </div>
+            </div>
+            <!-- JUDUL BARU -->
+            <h1 class="text-3xl font-extrabold text-gray-800">RIVI JOKI Form</h1>
+            <p class="text-gray-500 mt-1">Pilih layanan yang ingin Anda pesan:</p>
+        </header>
+
+        <!-- Seleksi Tipe Joki -->
+        <div id="service-selection" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Tombol dengan kelas service-btn untuk animasi -->
+            <button onclick="showForm('tugas', this)" class="service-btn px-3 py-3 rounded-xl border-2 border-indigo-200 text-indigo-700 font-semibold text-sm hover:bg-indigo-50 hover:scale-[1.02] hover:shadow-xl transition duration-200 shadow-md flex flex-col items-center justify-center">
+                <span class="text-2xl">✍️</span> Joki Tugas
+            </button>
+            <button onclick="showForm('mlbb', this)" class="service-btn px-3 py-3 rounded-xl border-2 border-red-200 text-red-700 font-semibold text-sm hover:bg-red-50 hover:scale-[1.02] hover:shadow-xl transition duration-200 shadow-md flex flex-col items-center justify-center">
+                <span class="text-2xl">🎮</span> Joki MLBB
+            </button>
+             <button onclick="showForm('install', this)" class="service-btn px-3 py-3 rounded-xl border-2 border-blue-200 text-blue-700 font-semibold text-sm hover:bg-blue-50 hover:scale-[1.02] hover:shadow-xl transition duration-200 shadow-md flex flex-col items-center justify-center">
+                <span class="text-2xl">💻</span> Jasa Install
+            </button>
+        </div>
+
+        <!-- Notifikasi (Awalnya tersembunyi) -->
+        <div id="notification" class="hidden p-4 bg-yellow-50 text-yellow-700 rounded-lg text-sm border border-yellow-200">
+            Silakan lengkapi formulir di bawah ini.
+        </div>
+
+        <!-- FORMULIR JOKI TUGAS (Universal) -->
+        <div id="form-tugas" class="hidden space-y-4 pt-4">
+            <h2 class="text-2xl font-bold text-indigo-600">✍️ Formulir Joki Tugas</h2>
+            <form onsubmit="submitForm('tugas'); return false;" class="space-y-4">
+                
+                <!-- Nama & ID -->
+                <div>
+                    <label for="tugas-nama-nim" class="block text-sm font-medium text-gray-700">📋 Nama & ID (NIM/No. Induk):</label>
+                    <input type="text" id="tugas-nama-nim" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Rinov Ananda / NIM: 12345678 atau No. Induk: 2025" required>
+                </div>
+                
+                <!-- Jurusan / Kelas -->
+                <div>
+                    <label for="tugas-jurusan-kelas" class="block text-sm font-medium text-gray-700">🎓 Jurusan / Kelas:</label>
+                    <input type="text" id="tugas-jurusan-kelas" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Teknik Informatika / Kelas X MIPA 1" required>
+                </div>
+
+                <!-- Fakultas / Sekolah -->
+                <div>
+                    <label for="tugas-fakultas-sekolah" class="block text-sm font-medium text-gray-700">🏫 Fakultas / Sekolah:</label>
+                    <input type="text" id="tugas-fakultas-sekolah" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: FST / SMAN 1 Pidie" required>
+                </div>
+                
+                <!-- Universitas / Nama Sekolah -->
+                <div>
+                    <label for="tugas-univ-sekolah" class="block text-sm font-medium text-gray-700">🏛️ Universitas / Nama Sekolah:</label>
+                    <input type="text" id="tugas-univ-sekolah" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: UIN Ar-Raniry Banda Aceh / SMA Budi Mulia" required>
+                </div>
+
+                <!-- Mata Kuliah / Pelajaran -->
+                <div>
+                    <label for="tugas-matkul" class="block text-sm font-medium text-gray-700">📚 Mata Kuliah / Pelajaran:</label>
+                    <input type="text" id="tugas-matkul" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Algoritma dan Pemrograman / Kimia" required>
+                </div>
+
+                <!-- Dosen / Guru Pengampu -->
+                <div>
+                    <label for="tugas-dosen" class="block text-sm font-medium text-gray-700">👩‍🏫 Dosen / Guru Pengampu:</label>
+                    <input type="text" id="tugas-dosen" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Dr. Ir. M. Jafar, M.Sc. / Bu Tini" required>
+                </div>
+
+                <!-- Jenis Tugas -->
+                <div>
+                    <label for="tugas-jenis" class="block text-sm font-medium text-gray-700">📝 Jenis Tugas (Makalah, Jurnal, PPT, dll):</label>
+                    <input type="text" id="tugas-jenis" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Makalah, 10 halaman, Font Times New Roman 12" required>
+                </div>
+                
+                <!-- Detail / Request -->
+                <div>
+                    <label for="tugas-detail" class="block text-sm font-medium text-gray-700">📄 Detail / Request (Topik, format, deadline, catatan):</label>
+                    <textarea id="tugas-detail" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Topik tentang Sejarah Islam di Aceh. Deadline 3 hari dari sekarang. Format PDF." required></textarea>
+                </div>
+
+                <!-- Tombol Submit -->
+                <button type="submit" class="primary-btn w-full text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    Kirim Form ke WhatsApp Rivi
+                </button>
+            </form>
+        </div>
+
+
+        <!-- FORMULIR JOKI MLBB (UNIVERSAL) -->
+        <div id="form-mlbb" class="hidden space-y-4 pt-4">
+            <h2 class="text-2xl font-bold text-red-600">🎮 Formulir Joki MLBB</h2>
+            <form onsubmit="submitForm('mlbb'); return false;" class="space-y-4">
+                
+                <!-- USERNAME -->
+                <div>
+                    <label for="mlbb-username" class="block text-sm font-medium text-gray-700">👤 USERNAME:</label>
+                    <input type="text" id="mlbb-username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Riviananda (ID 12345678)" required>
+                </div>
+
+                <!-- EMAIL AKUN -->
+                <div>
+                    <label for="mlbb-email" class="block text-sm font-medium text-gray-700">✉️ EMAIL AKUN:</label>
+                    <input type="email" id="mlbb-email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: emailriviananda@gmail.com" required>
+                </div>
+
+                <!-- PASSWORD -->
+                <div>
+                    <label for="mlbb-password" class="block text-sm font-medium text-gray-700">🔒 PASSWORD:</label>
+                    <input type="text" id="mlbb-password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: passwordsementara123" required>
+                    <p class="text-xs text-red-500 mt-1">Disarankan menggunakan password sementara.</p>
+                </div>
+
+                <!-- LOGIN VIA -->
+                <div>
+                    <label for="mlbb-login-via" class="block text-sm font-medium text-gray-700">🔑 LOGIN VIA:</label>
+                    <select id="mlbb-login-via" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white" required>
+                        <option value="" disabled selected>Pilih salah satu...</option>
+                        <option value="Moonton">Moonton</option>
+                        <option value="VK">VK</option>
+                        <option value="Facebook">Facebook</option>
+                        <option value="Gmail">Gmail</option>
+                    </select>
+                </div>
+                
+                <!-- TUJUAN JOKI (UNIVERSAL) -->
+                <div>
+                    <label for="mlbb-tujuan" class="block text-sm font-medium text-gray-700">🎯 TUJUAN JOKI:</label>
+                    <select id="mlbb-tujuan" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white" required>
+                        <option value="" disabled selected>Pilih jenis layanan...</option>
+                        <option value="Joki Rank">Joki Rank (Tulis Rank Awal & Target di Catatan)</option>
+                        <option value="Joki Gendong/Mabar VIP">Joki Gendong / Mabar VIP (Tulis Jam/Rank di Catatan)</option>
+                        <option value="Joki Classic WR">Joki Classic WR (Tulis Target WR di Catatan)</option>
+                        <option value="Joki Turnamen DM">Joki Turnamen DM (Tulis Detail Turnamen di Catatan)</option>
+                    </select>
+                </div>
+
+                <!-- REQUEST HERO / CATATAN -->
+                <div>
+                    <label for="mlbb-request" class="block text-sm font-medium text-gray-700">🛡️ DETAIL & CATATAN PENTING:</label>
+                    <textarea id="mlbb-request" rows="5" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Wajib diisi! Contoh: Untuk Joki Rank, Rank Awal Epic IV → Target Legend V. Atau: Untuk Mabar VIP, butuh 5x main hari ini. Pakai hero Fanny/Joy, jangan ubah skin." required></textarea>
+                </div>
+
+                <!-- Tombol Submit -->
+                <button type="submit" class="primary-btn w-full text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    Kirim Form ke WhatsApp Rivi
+                </button>
+            </form>
+        </div>
+        
+        <!-- FORMULIR JASA INSTALL ULANG -->
+        <div id="form-install" class="hidden space-y-4 pt-4">
+            <h2 class="text-2xl font-bold text-blue-600">💻 Formulir Jasa Install Ulang</h2>
+            <form onsubmit="submitForm('install'); return false;" class="space-y-4">
+                
+                <!-- Nama -->
+                <div>
+                    <label for="install-nama" class="block text-sm font-medium text-gray-700">📋 Nama:</label>
+                    <input type="text" id="install-nama" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Rinov Ananda Ramadana" required>
+                </div>
+
+                <!-- Nomor Aktif -->
+                <div>
+                    <label for="install-nomor" class="block text-sm font-medium text-gray-700">📞 Nomor aktif:</label>
+                    <input type="tel" id="install-nomor" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: 0822xxxxxx (Wajib diisi)" required>
+                </div>
+                
+                <!-- Perangkat -->
+                <div>
+                    <label for="install-perangkat" class="block text-sm font-medium text-gray-700">📱 Perangkat:</label>
+                    <input type="text" id="install-perangkat" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Laptop Asus ROG / PC Gaming / HP Samsung A54" required>
+                </div>
+
+                <!-- Masalah / Request -->
+                <div>
+                    <label for="install-request" class="block text-sm font-medium text-gray-700">💻 Masalah / Request:</label>
+                    <textarea id="install-request" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Install ulang Windows 11 (lama lemot) + install MS Office dan Adobe Premiere." required></textarea>
+                </div>
+
+                <!-- Lokasi Install -->
+                <div>
+                    <label for="install-lokasi" class="block text-sm font-medium text-gray-700">📍 Lokasi Install (Sekitar Sigli / Pidie):</label>
+                    <input type="text" id="install-lokasi" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Rumah, Jl. T. Nyak Arief No. 12, Sigli" required>
+                </div>
+
+                <!-- Data penting -->
+                <div>
+                    <label for="install-data" class="block text-sm font-medium text-gray-700">📂 Data penting (File yang harus dijaga):</label>
+                    <input type="text" id="install-data" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm" placeholder="Contoh: Folder 'Dokumen Skripsi' di Drive D. (Opsional)">
+                </div>
+                
+                <!-- Tombol Submit -->
+                <button type="submit" class="primary-btn w-full text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition duration-300">
+                    Kirim Form ke WhatsApp Rivi
+                </button>
+            </form>
+        </div>
+
+        <!-- 3. INFORMASI PEMBAYARAN -->
+        <div id="payment-info" class="pt-6 border-t border-gray-200 mt-6 space-y-6">
+            <h2 class="text-2xl font-extrabold text-gray-800 text-center">💰 Info Pembayaran (Transfer & E-Wallet)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                <!-- Detail Bank dan E-Wallet -->
+                <div class="space-y-4">
+                    <div class="p-4 bg-white border border-gray-200 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-lg text-green-700">🏦 BSI (Bank Syariah Indonesia)</h3>
+                        <p class="text-sm mt-1">Nomor Rekening: <span class="font-mono font-semibold text-gray-900">7220088698</span></p>
+                        <p class="text-sm">Atas Nama: <span class="font-semibold text-gray-800">RINOV ANANDA RAMADANA</span></p>
+                    </div>
+
+                    <div class="p-4 bg-white border border-gray-200 rounded-xl shadow-lg">
+                        <h3 class="font-bold text-lg text-blue-600">💸 E-Wallet (GOPAY & DANA)</h3>
+                        <p class="text-sm mt-1">Nomor Telepon: <span class="font-mono font-semibold text-gray-900">082284573569</span></p>
+                        <p class="text-sm">Atas Nama (GOPAY): <span class="font-semibold text-gray-800">RINOV ANANDA RAMADANA</span></p>
+                        <p class="text-xs text-gray-500 mt-2">Gunakan nomor di atas untuk transfer ke GOPAY atau DANA.</p>
+                    </div>
+                </div>
+
+                <!-- QRIS Section (Kembali ke rasio 1:1) -->
+                <div class="space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
+                    <h3 class="font-bold text-xl text-purple-700">💳 Bayar Via QRIS (Semua Bank/E-Wallet)</h3>
+                    <!-- Dimensi diubah kembali ke 1:1 (w-48 h-48) -->
+                    <div class="w-48 h-48 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border-4 border-purple-300">
+                        <img id="qris-image" 
+                            src="https://placehold.co/400x400/805ad5/ffffff?text=QRIS+ANDA+DISINI" 
+                            onerror="this.src='https://placehold.co/400x400/805ad5/ffffff?text=QRIS+Gagal+Dimuat'"
+                            alt="Kode QRIS untuk Pembayaran" 
+                            class="w-full h-full object-contain">
+                    </div>
+                    <p class="text-sm text-gray-600 font-semibold">Silakan scan kode QRIS di atas untuk pembayaran instan.</p>
+                    <p class="text-xs text-red-500 mt-2">**CATATAN: GANTI URL GAMBAR QRIS** pada kode HTML agar QRIS Anda tampil.</p>
+                </div>
+            </div>
+            
+            <p class="text-center text-sm pt-4 text-gray-600 border-t border-gray-100">Setelah mengisi form dan mendapat konfirmasi harga dari Rivi, silakan lakukan pembayaran ke salah satu pilihan di atas.</p>
+        </div>
+
+
+        
+        <!-- Footer -->
+        <footer class="text-center text-xs text-gray-500 pt-4 border-t border-gray-100 space-y-1">
+            <p class="font-bold text-sm text-gray-700">
+                🧠 by Rivi — 
+                <a href="https://instagram.com/jokiwith.rivi" target="_blank" class="text-pink-600 hover:text-pink-800 transition duration-200 font-semibold">
+                    @jokiwith.rivi (Klik di sini)
+                </a>
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- 4. PESAN SUKSES KIRIM -->
+    <div id="success-message" class="bg-green-500 text-white px-6 py-3 rounded-full shadow-xl">
+        ✅ Formulir Terkirim! Dialihkan ke WhatsApp...
+    </div>
+
+    <script>
+        // *** NOMOR WHATSAPP RIVI ***
+        const RIVI_WA_NUMBER = "6282284573569"; 
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // TIDAK ADA AUTO HILANG DI DOM LOAD
+        });
+
+        function hideSplashScreen() {
+            const splashScreen = document.getElementById('splash-screen');
+            const appContainer = document.getElementById('app-container');
+
+            splashScreen.classList.add('splash-fade');
+            
+            // Atur agar konten utama muncul setelah fade out dimulai
+            appContainer.classList.remove('opacity-0');
+            document.body.style.overflow = 'auto'; // Aktifkan scroll
+            
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 1000); // Durasi fade 1 detik
+        }
+
+
+        function showForm(type, button) {
+            const forms = ['form-tugas', 'form-mlbb', 'form-install'];
+            const notification = document.getElementById('notification');
+            const serviceButtons = document.querySelectorAll('.service-btn');
+            
+            // Hapus style animasi dari semua tombol
+            serviceButtons.forEach(btn => {
+                btn.classList.remove('scale-[1.05]', 'shadow-2xl', 'ring-2', 'ring-offset-2', 'ring-indigo-500', 'ring-red-500', 'ring-blue-500');
+            });
+            
+            // Tambahkan style animasi dan ring pada tombol yang diklik
+            const ringColor = type === 'tugas' ? 'ring-indigo-500' : (type === 'mlbb' ? 'ring-red-500' : 'ring-blue-500');
+            button.classList.add('scale-[1.05]', 'shadow-2xl', 'ring-2', 'ring-offset-2', ringColor);
+
+            forms.forEach(id => document.getElementById(id).classList.add('hidden'));
+            notification.classList.remove('hidden');
+
+            document.getElementById(`form-${type}`).classList.remove('hidden');
+        }
+
+        function submitForm(type) {
+            let message = "";
+            let formTitle = "";
+            
+            if (type === 'tugas') {
+                // Judul untuk WhatsApp
+                formTitle = "✍️ JOKI TUGAS by RIVI (FORM TERISI)";
+                const namaNIM = document.getElementById('tugas-nama-nim').value;
+                const jurusanKelas = document.getElementById('tugas-jurusan-kelas').value;
+                const fakultasSekolah = document.getElementById('tugas-fakultas-sekolah').value;
+                const univSekolah = document.getElementById('tugas-univ-sekolah').value;
+                const matkul = document.getElementById('tugas-matkul').value;
+                const dosen = document.getElementById('tugas-dosen').value;
+                const jenis = document.getElementById('tugas-jenis').value;
+                const detail = document.getElementById('tugas-detail').value;
+
+                // Konten pesan WA yang bersih
+                message = `${formTitle}\n\n` + 
+                          `*Data Pemesan:*\n` +
+                          `- Nama & ID: ${namaNIM}\n` + 
+                          `- Jurusan / Kelas: ${jurusanKelas}\n` + 
+                          `- Fakultas / Sekolah: ${fakultasSekolah}\n` + 
+                          `- Univ / Sekolah: ${univSekolah}\n` + 
+                          `- Matkul / Pelajaran: ${matkul}\n` + 
+                          `- Dosen / Guru: ${dosen}\n\n` + 
+                          `*Detail Pesanan:*\n` + 
+                          `- Jenis Tugas: ${jenis}\n` + 
+                          `- Detail / Request: ${detail}\n\n` +
+                          `Mohon konfirmasi harga dan estimasi pengerjaan. Terima kasih!`;
+
+            } else if (type === 'mlbb') {
+                formTitle = "🎮 JOKI MLBB by RIVI (FORM TERISI)";
+                const username = document.getElementById('mlbb-username').value;
+                const email = document.getElementById('mlbb-email').value;
+                const password = document.getElementById('mlbb-password').value;
+                const loginVia = document.getElementById('mlbb-login-via').value;
+                const tujuan = document.getElementById('mlbb-tujuan').value;
+                const request = document.getElementById('mlbb-request').value || 'Tidak ada';
+
+                message = `${formTitle}\n\n` +
+                          `*Akun & Login:*\n` +
+                          `- USERNAME: ${username}\n` +
+                          `- EMAIL AKUN: ${email}\n` +
+                          `- PASSWORD: ${password}\n` +
+                          `- LOGIN VIA: ${loginVia}\n\n` +
+                          `*Detail Pesanan:*\n` +
+                          `- Tujuan Joki: ${tujuan}\n` +
+                          `- Detail & Catatan: ${request}\n\n` +
+                          `Mohon konfirmasi harga dan estimasi pengerjaan. Terima kasih!`;
+            
+            } else if (type === 'install') {
+                formTitle = "💻 JASA INSTALL ULANG by RIVI (FORM TERISI)";
+                const nama = document.getElementById('install-nama').value;
+                const nomor = document.getElementById('install-nomor').value;
+                const perangkat = document.getElementById('install-perangkat').value;
+                const request = document.getElementById('install-request').value;
+                const lokasi = document.getElementById('install-lokasi').value;
+                const data = document.getElementById('install-data').value || 'Tidak ada data penting yang disebutkan';
+
+                message = `${formTitle}\n\n` +
+                          `*Data Pemesan:*\n` +
+                          `- Nama: ${nama}\n` +
+                          `- Nomor Aktif: ${nomor}\n` +
+                          `- Perangkat: ${perangkat}\n` +
+                          `- Lokasi Install: ${lokasi}\n\n` +
+                          `*Detail Pesanan:*\n` +
+                          `- Masalah / Request: ${request}\n` +
+                          `- Data Penting: ${data}\n\n` +
+                          `Mohon konfirmasi harga dan estimasi waktu pengerjaan. Terima kasih!`;
+            }
+
+
+            // Tampilkan pesan sukses sebentar
+            const successMessage = document.getElementById('success-message');
+            successMessage.classList.add('show-success');
+
+            // Encode pesan untuk URL dan buat link WhatsApp
+            const encodedMessage = encodeURIComponent(message);
+            const waLink = `https://wa.me/${RIVI_WA_NUMBER}?text=${encodedMessage}`;
+            
+            // Tunggu sebentar (misal 500ms) sebelum dialihkan agar pesan sukses terlihat
+            setTimeout(() => {
+                window.open(waLink, '_blank');
+                successMessage.classList.remove('show-success'); // Sembunyikan pesan lagi
+            }, 500); 
+        }
+    </script>
+</body>
+</html>
