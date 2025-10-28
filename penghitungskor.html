@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lapannam Match Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
+        .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .btn { border-radius: 8px; font-weight: 600; transition: background-color 0.2s; }
+    </style>
+</head>
+<body class="p-4">
+    <div id="app" class="max-w-md mx-auto">
+        <!-- HEADER -->
+        <h1 class="text-3xl font-bold text-center mb-6 text-indigo-700">⚽ Lapannam Match Logger</h1>
+
+        <!-- FIREBASE INITIALIZATION & AUTH -->
+        <div id="loading-screen" class="text-center p-8 card bg-white">
+            <p class="text-gray-600 mb-4">Memuat data dan menginisiasi sesi...</p>
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto"></div>
+        </div>
+        
+        <!-- MAIN APP CONTENT -->
+        <div id="match-app" class="hidden">
+            <!-- 1. MATCH SETUP SCREEN -->
+            <div id="setup-screen" class="p-6 card bg-white mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">⚙️ Konfigurasi Pertandingan</h2>
+                <label for="babak" class="block text-sm font-medium text-gray-700 mb-1">Babak:</label>
+                <select id="babak" class="w-full p-2 mb-3 border border-gray-300 rounded-lg">
+                    <option value="">-- Pilih Babak --</option>
+                </select>
+
+                <label for="teamA" class="block text-sm font-medium text-gray-700 mb-1">Tim A:</label>
+                <select id="teamA" class="w-full p-2 mb-3 border border-gray-300 rounded-lg">
+                    <option value="">-- Pilih Tim A --</option>
+                </select>
+
+                <label for="teamB" class="block text-sm font-medium text-gray-700 mb-1">Tim B:</label>
+                <select id="teamB" class="w-full p-2 mb-4 border border-gray-300 rounded-lg">
+                    <option value="">-- Pilih Tim B --</option>
+                </select>
+
+                <button onclick="startMatch()" class="btn w-full py-3 bg-indigo-600 text-white hover:bg-indigo-700">Mulai Catat Pertandingan</button>
+                
+                <button onclick="showExportModal()" class="btn w-full py-3 mt-4 bg-gray-500 text-white hover:bg-gray-600">📊 Ekspor Semua Log Data</button>
+            </div>
+
+            <!-- 2. EVENT LOGGER SCREEN -->
+            <div id="logger-screen" class="hidden">
+                <div class="mb-4 p-4 card bg-indigo-600 text-white">
+                    <h3 id="match-info" class="text-lg font-semibold mb-2 text-center"></h3>
+                    <div class="flex justify-between items-center text-3xl font-bold">
+                        <span id="scoreA">0</span>
+                        <span>-</span>
+                        <span id="scoreB">0</span>
+                    </div>
+                </div>
+
+                <!-- EVENT INPUT CONTROLS -->
+                <div class="p-4 card bg-white mb-4">
+                    <label for="eventTime" class="block text-sm font-medium text-gray-700 mb-1">Waktu Kejadian (Menit - Opsional):</label>
+                    <input type="number" id="eventTime" min="1" max="90" placeholder="Menit (Kosongkan jika tidak tahu)" class="w-full p-2 mb-3 border border-gray-300 rounded-lg">
+                    
+                    <label for="noPg" class="block text-sm font-medium text-gray-700 mb-1">No. Punggung Pemain:</label>
+                    <input type="text" id="noPg" placeholder="No. PG" class="w-full p-2 mb-3 border border-gray-300 rounded-lg">
+
+                    <label for="playerName" class="block text-sm font-medium text-gray-700 mb-1">Nama Pemain (Opsional):</label>
+                    <input type="text" id="playerName" placeholder="Nama Pemain" class="w-full p-2 mb-4 border border-gray-300 rounded-lg">
+                    
+                    <label for="eventTeam" class="block text-sm font-medium text-gray-700 mb-1">Tim Pelaku Kejadian:</label>
+                    <select id="eventTeam" class="w-full p-2 mb-4 border border-gray-300 rounded-lg"></select>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="logEvent('GOL')" class="btn py-4 bg-green-500 text-white hover:bg-green-600">⚽ GOL</button>
+                        <button onclick="logEvent('KUNING')" class="btn py-4 bg-yellow-500 text-gray-800 hover:bg-yellow-600">🟨 KUNING</button>
+                        <button onclick="logEvent('MERAH')" class="btn py-4 bg-red-500 text-white hover:bg-red-600">🟥 MERAH</button>
+                    </div>
+                </div>
+
+                <!-- EVENT LOG DISPLAY -->
+                <div class="p-4 card bg-white">
+                    <h4 class="text-lg font-semibold mb-3 text-gray-700">Daftar Kejadian (Log)</h4>
+                    <div id="event-log" class="space-y-2 text-sm max-h-60 overflow-y-scroll p-1 border rounded-md">
+                        <!-- Events will be listed here -->
+                        <p id="no-events" class="text-gray-500 text-center">Belum ada kejadian tercatat.</p>
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between gap-2">
+                        <button onclick="finishMatch()" class="btn py-2 bg-indigo-500 text-white hover:bg-indigo-600 flex-1">✅ Selesai</button>
+                        <button onclick="copyToWhatsApp()" class="btn py-2 bg-cyan-500 text-white hover:bg-cyan-600 flex-1">📲 Salin ke WA</button>
+                    </div>
+                    <button onclick="resetApp()" class="btn py-2 mt-2 bg-gray-300 text-gray-800 hover:bg-gray-400 w-full">Kembali ke Setup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for Confirmation / Alert (Custom, no alert()) -->
+    <div id="custom-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="card bg-white p-6 w-full max-w-sm text-center">
+            <h3 id="modal-title" class="text-xl font-bold mb-3"></h3>
+            <p id="modal-message" class="mb-4"></p>
+            <div id="modal-buttons" class="flex justify-center gap-4">
+                <button onclick="closeModal()" class="btn py-2 px-4 bg-gray-300 text-gray-800">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="card bg-white p-6 w-full max-w-lg">
+            <h3 class="text-xl font-bold mb-3">Ekspor Data Turnamen</h3>
+            <p class="mb-4 text-sm text-gray-600">Salin teks di bawah ini, lalu tempel (*paste*) langsung ke baris kedua (*row 2*) *spreadsheet* Google Sheets/Excel Anda.</p>
+            
+            <textarea id="export-data-textarea" readonly class="w-full h-40 p-2 text-xs border border-gray-400 rounded-lg mb-4 resize-none"></textarea>
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="copyExportData()" class="btn py-2 px-4 bg-green-600 text-white hover:bg-green-700">💾 Salin Data</button>
+                <button onclick="closeExportModal()" class="btn py-2 px-4 bg-gray-300 text-gray-800">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot, query, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables for Firebase (MUST BE USED)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'lapannam-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        // Global App State
+        window.db = null;
+        window.auth = null;
+        window.currentMatchId = null;
+        window.currentMatchData = null;
+        window.currentUserId = null;
+
+        // Constants
+        const TEAMS = [
+            "PUTRAJA FC", "PSG GAJAHYE", "ACADEMY MUTIARA RAYA FC", "ANTARA FC", "PSBL LANCANG", "TURBO FC", 
+            "GABELA FC", "KR. SEUMIDEUN", "3HBR FC", "MAN 1 PIDIE", "BERINGIN JAYA FC", "AWEE FC", "ONC FC", 
+            "ACADEMY PERSIMURA", "CURTIM FC", "MNZ FC", "PUTRA PANTAI FC", "PERSIRABA FC", "VILLAGE'S FC", 
+            "RENCONG PUTRA", "LILEU FC", "STARLEST UNITED FC", "BINTANG COMBAT FC", "D63 FC", "CSK KEUMALA FC", 
+            "YASAGOR FC PULO SUNONG FC", "BLANG PASEH FC", "PULI UNITED FC", "PANBAR FC", "KDC KRUENG DHOE FC", 
+            "SINGA BARON FC", "PERSIGRO FC"
+        ];
+        const BABAKS = ["32 BESAR", "16 BESAR", "8 BESAR (PEREMPAT FINAL)", "4 BESAR (SEMIFINAL)", "FINAL"];
+
+        // Utility function for exponential backoff retry
+        const fetchWithRetry = async (fn, retries = 3, delay = 1000) => {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+                }
+            }
+        };
+
+        async function initFirebase() {
+            if (!firebaseConfig) {
+                 window.showCustomModal("Error", "Konfigurasi Firebase tidak ditemukan.", [{ text: "OK", action: "close" }]);
+                return;
+            }
+            
+            try {
+                const app = initializeApp(firebaseConfig);
+                window.db = getFirestore(app);
+                window.auth = getAuth(app);
+                // setLogLevel('debug'); // Uncomment for debugging
+                
+                await fetchWithRetry(async () => {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(window.auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(window.auth);
+                    }
+                });
+
+                onAuthStateChanged(window.auth, (user) => {
+                    if (user) {
+                        window.currentUserId = user.uid;
+                        console.log("Authenticated as:", window.currentUserId);
+                        populateDropdowns();
+                        checkActiveMatch();
+                        document.getElementById('loading-screen').classList.add('hidden');
+                        document.getElementById('match-app').classList.remove('hidden');
+                    } else {
+                        console.log("Authentication failed or logged out.");
+                        // Attempt re-auth if needed
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                 window.showCustomModal("Error", "Gagal menginisiasi Firebase: " + error.message, [{ text: "OK", action: "close" }]);
+            }
+        }
+
+        function populateDropdowns() {
+            const teamASelect = document.getElementById('teamA');
+            const teamBSelect = document.getElementById('teamB');
+            const babakSelect = document.getElementById('babak');
+            
+            teamASelect.innerHTML = '<option value="">-- Pilih Tim A --</option>';
+            teamBSelect.innerHTML = '<option value="">-- Pilih Tim B --</option>';
+            
+            TEAMS.forEach(team => {
+                const optionA = document.createElement('option');
+                optionA.value = team;
+                optionA.textContent = team;
+                teamASelect.appendChild(optionA);
+
+                const optionB = document.createElement('option');
+                optionB.value = team;
+                optionB.textContent = team;
+                teamBSelect.appendChild(optionB);
+            });
+
+            BABAKS.forEach(babak => {
+                const option = document.createElement('option');
+                option.value = babak;
+                option.textContent = babak;
+                babakSelect.appendChild(option);
+            });
+        }
+
+        function getMatchLogPath() {
+            return `artifacts/${appId}/users/${window.currentUserId}/lapannam_match_logs`;
+        }
+
+        async function checkActiveMatch() {
+            if (!window.db || !window.currentUserId) return;
+
+            // Simple check: Try to load a match ID from local storage (or a specific default 'current' document)
+            window.currentMatchId = localStorage.getItem('lapannam_current_match_id');
+            
+            if (window.currentMatchId) {
+                const docRef = doc(window.db, getMatchLogPath(), window.currentMatchId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    window.currentMatchData = docSnap.data();
+                    if (window.currentMatchData.status === 'IN_PROGRESS') {
+                        setupLiveListener(window.currentMatchId);
+                        showLoggerScreen(window.currentMatchData);
+                        return;
+                    } else {
+                        // Match finished, clear local storage for a new one
+                        localStorage.removeItem('lapannam_current_match_id');
+                        window.currentMatchId = null;
+                    }
+                } else {
+                    localStorage.removeItem('lapannam_current_match_id');
+                    window.currentMatchId = null;
+                }
+            }
+            // If no active match found, show setup screen
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        function setupLiveListener(matchId) {
+            const docRef = doc(window.db, getMatchLogPath(), matchId);
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    window.currentMatchData = docSnap.data();
+                    updateLoggerDisplay(window.currentMatchData.events);
+                    updateScore(window.currentMatchData);
+                }
+            }, (error) => {
+                console.error("Error setting up listener:", error);
+            });
+        }
+
+        window.startMatch = async function() {
+            const teamA = document.getElementById('teamA').value;
+            const teamB = document.getElementById('teamB').value;
+            const babak = document.getElementById('babak').value;
+
+            if (!teamA || !teamB || !babak) {
+                window.showCustomModal("Perhatian", "Mohon lengkapi Tim A, Tim B, dan Babak terlebih dahulu.", [{ text: "OK", action: "close" }]);
+                return;
+            }
+            if (teamA === teamB) {
+                window.showCustomModal("Perhatian", "Tim A dan Tim B harus berbeda.", [{ text: "OK", action: "close" }]);
+                return;
+            }
+
+            const matchId = `match_${Date.now()}`;
+            const newMatchData = {
+                teamA,
+                teamB,
+                babak,
+                date: new Date().toLocaleDateString('id-ID'),
+                status: 'IN_PROGRESS',
+                events: []
+            };
+
+            try {
+                const docRef = doc(window.db, getMatchLogPath(), matchId);
+                await fetchWithRetry(() => setDoc(docRef, newMatchData));
+                
+                window.currentMatchId = matchId;
+                localStorage.setItem('lapannam_current_match_id', matchId);
+                
+                setupLiveListener(matchId);
+                showLoggerScreen(newMatchData);
+
+            } catch (error) {
+                console.error("Error starting match:", error);
+                window.showCustomModal("Error", "Gagal menyimpan data pertandingan: " + error.message, [{ text: "OK", action: "close" }]);
+            }
+        }
+
+        window.logEvent = async function(eventType) {
+            // Waktu Kejadian is now OPTIONAL
+            const timeInput = document.getElementById('eventTime').value;
+            const time = timeInput ? parseInt(timeInput, 10) : null; 
+            
+            const noPg = document.getElementById('noPg').value;
+            const playerName = document.getElementById('playerName').value || '-';
+            const eventTeam = document.getElementById('eventTeam').value;
+            const currentTimestamp = new Date().toISOString();
+
+            if (!noPg || !eventTeam) {
+                window.showCustomModal("Perhatian", "No. PG, dan Tim Pelaku wajib diisi.", [{ text: "OK", action: "close" }]);
+                return;
+            }
+            
+            const newEvent = {
+                time: time,
+                type: eventType,
+                no_pg: noPg.toUpperCase(),
+                player_name: playerName.toUpperCase(),
+                team: eventTeam,
+                match: `${window.currentMatchData.teamA} vs ${window.currentMatchData.teamB}`,
+                babak: window.currentMatchData.babak,
+                date: window.currentMatchData.date,
+                timestamp: currentTimestamp
+            };
+
+            // Sort events: primary by time (if available), secondary by timestamp
+            const updatedEvents = [...window.currentMatchData.events, newEvent].sort((a, b) => {
+                 if (a.time === null && b.time === null) return 0;
+                 if (a.time === null) return 1; // Null times go last
+                 if (b.time === null) return -1;
+                 if (a.time !== b.time) return a.time - b.time;
+                 return a.timestamp > b.timestamp ? 1 : -1;
+            });
+            
+            try {
+                const docRef = doc(window.db, getMatchLogPath(), window.currentMatchId);
+                await fetchWithRetry(() => updateDoc(docRef, { events: updatedEvents }));
+                
+                // Clear inputs after successful log
+                document.getElementById('eventTime').value = '';
+                document.getElementById('noPg').value = '';
+                document.getElementById('playerName').value = '';
+
+            } catch (error) {
+                console.error("Error logging event:", error);
+                window.showCustomModal("Error", "Gagal mencatat kejadian: " + error.message, [{ text: "OK", action: "close" }]);
+            }
+        }
+
+        window.finishMatch = function() {
+            window.showCustomModal("Konfirmasi", "Apakah Anda yakin ingin menyelesaikan pertandingan ini? Data akan ditutup.", [
+                { text: "Batal", action: "close" },
+                { text: "Selesaikan", action: "confirmFinish" }
+            ]);
+        }
+        
+        window.confirmFinish = async function() {
+            try {
+                const docRef = doc(window.db, getMatchLogPath(), window.currentMatchId);
+                await fetchWithRetry(() => updateDoc(docRef, { status: 'FINISHED' }));
+                
+                window.showCustomModal("Selesai!", "Pertandingan telah disimpan sebagai selesai.", [{ text: "OK", action: "reset" }]);
+                localStorage.removeItem('lapannam_current_match_id');
+                
+            } catch (error) {
+                console.error("Error finishing match:", error);
+                window.showCustomModal("Error", "Gagal menyelesaikan pertandingan: " + error.message, [{ text: "OK", action: "close" }]);
+            }
+        }
+        
+        window.resetApp = function() {
+             localStorage.removeItem('lapannam_current_match_id');
+             window.location.reload();
+        }
+        
+        // --- DATA EXPORT FUNCTIONALITY ---
+        
+        window.showExportModal = async function() {
+            const textarea = document.getElementById('export-data-textarea');
+            textarea.value = "Memuat semua data pertandingan... Harap tunggu.";
+            document.getElementById('export-modal').classList.remove('hidden');
+            document.getElementById('export-modal').classList.add('flex');
+            
+            const allData = await fetchAllMatchData();
+            const csvContent = generateCsv(allData);
+            
+            textarea.value = csvContent;
+        }
+        
+        window.closeExportModal = function() {
+            document.getElementById('export-modal').classList.remove('flex');
+            document.getElementById('export-modal').classList.add('hidden');
+        }
+        
+        window.copyExportData = function() {
+            const textarea = document.getElementById('export-data-textarea');
+            const csvContent = textarea.value;
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = csvContent;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    window.showCustomModal("Berhasil!", "Seluruh log data turnamen berhasil disalin. Silakan tempel (*paste*) ke spreadsheet Anda.", [{ text: "OK", action: "closeExport" }]);
+                } else {
+                    window.showCustomModal("Gagal Salin", "Gagal menyalin. Silakan salin teks di kotak ekspor secara manual.", [{ text: "OK", action: "close" }]);
+                }
+            } catch (err) {
+                console.error('Copy failed (execCommand): ', err);
+                 window.showCustomModal("Gagal Salin", "Gagal menyalin. Silakan salin teks di kotak ekspor secara manual.", [{ text: "OK", action: "close" }]);
+            }
+            
+            document.body.removeChild(tempTextarea);
+        }
+        
+        // Custom action for closing export modal
+        window.closeExportModalAction = function() {
+            closeModal(); 
+            closeExportModal();
+        }
+
+        async function fetchAllMatchData() {
+            try {
+                const q = query(collection(window.db, getMatchLogPath()));
+                const querySnapshot = await getDocs(q);
+                let allEvents = [];
+                
+                querySnapshot.forEach((doc) => {
+                    const match = doc.data();
+                    match.events.forEach(event => {
+                        allEvents.push(event);
+                    });
+                });
+                return allEvents;
+
+            } catch (error) {
+                console.error("Error fetching all data:", error);
+                window.showCustomModal("Error Ekspor", "Gagal mengambil semua data pertandingan: " + error.message, [{ text: "OK", action: "close" }]);
+                return [];
+            }
+        }
+        
+        function generateCsv(events) {
+            // Header sesuai format spreadsheet yang diinginkan
+            const header = [
+                "TANGGAL", "BABAK", "PERTANDINGAN", "JENIS KEJADIAN", 
+                "WAKTU (Menit)", "NAMA PEMAIN", "NO. PG", "TIM KEJADIAN", 
+                "KETERANGAN", "PELAKU (P. JAWAB)"
+            ];
+            
+            const rows = events.map(e => [
+                e.date || '',
+                e.babak || '',
+                e.match || '',
+                e.type || '',
+                e.time !== null ? e.time : '', // Mengubah null time menjadi string kosong
+                e.player_name || '',
+                e.no_pg || '',
+                e.team || '',
+                '', // Keterangan (Kosongkan)
+                ''  // P. Jawab (Kosongkan)
+            ].map(String).join('\t')); // Gunakan Tab (\t) untuk CSV yang mudah di-paste
+            
+            return [header.join('\t'), ...rows].join('\n');
+        }
+        
+        // --- UI UPDATES ---
+        
+        function showLoggerScreen(data) {
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('logger-screen').classList.remove('hidden');
+
+            document.getElementById('match-info').textContent = `${data.babak}: ${data.teamA} vs ${data.teamB}`;
+            
+            const eventTeamSelect = document.getElementById('eventTeam');
+            eventTeamSelect.innerHTML = `<option value="">-- Pilih Tim --</option>`;
+            
+            const teams = [data.teamA, data.teamB];
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                eventTeamSelect.appendChild(option);
+            });
+        }
+        
+        function updateScore(data) {
+            const score = data.events.filter(e => e.type === 'GOL').reduce((acc, event) => {
+                if (event.team === data.teamA) acc.A += 1;
+                if (event.team === data.teamB) acc.B += 1;
+                return acc;
+            }, { A: 0, B: 0 });
+
+            document.getElementById('scoreA').textContent = score.A;
+            document.getElementById('scoreB').textContent = score.B;
+            
+            if (score.A > score.B) {
+                document.getElementById('scoreA').classList.add('text-yellow-300');
+                document.getElementById('scoreB').classList.remove('text-yellow-300');
+            } else if (score.B > score.A) {
+                document.getElementById('scoreB').classList.add('text-yellow-300');
+                document.getElementById('scoreA').classList.remove('text-yellow-300');
+            } else {
+                document.getElementById('scoreA').classList.remove('text-yellow-300');
+                document.getElementById('scoreB').classList.remove('text-yellow-300');
+            }
+        }
+
+        function updateLoggerDisplay(events) {
+            const logContainer = document.getElementById('event-log');
+            const noEventsElement = document.getElementById('no-events'); 
+            logContainer.innerHTML = '';
+
+            if (events.length === 0) {
+                if (noEventsElement) {
+                    noEventsElement.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (noEventsElement) {
+                noEventsElement.classList.add('hidden');
+            }
+
+            events.forEach(event => {
+                let colorClass = '';
+                let emoji = '';
+                
+                switch (event.type) {
+                    case 'GOL': colorClass = 'text-green-700 bg-green-50'; emoji = '⚽'; break;
+                    case 'KUNING': colorClass = 'text-yellow-700 bg-yellow-50'; emoji = '🟨'; break;
+                    case 'MERAH': colorClass = 'text-red-700 bg-red-50'; emoji = '🟥'; break;
+                    default: colorClass = 'text-gray-700 bg-gray-50';
+                }
+
+                const timeDisplay = event.time !== null ? `${event.time}'` : 'N/A';
+                
+                const logItem = document.createElement('p');
+                logItem.className = `p-2 rounded-lg ${colorClass}`;
+                logItem.textContent = `${emoji} [${timeDisplay}] ${event.team} | PG ${event.no_pg} (${event.player_name})`;
+                logContainer.appendChild(logItem);
+            });
+            // Scroll to bottom of log
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        window.copyToWhatsApp = function() {
+            if (!window.currentMatchData || window.currentMatchData.events.length === 0) {
+                 window.showCustomModal("Error", "Tidak ada kejadian untuk disalin.", [{ text: "OK", action: "close" }]);
+                return;
+            }
+
+            const data = window.currentMatchData;
+            const date = data.date;
+            const scoreA = document.getElementById('scoreA').textContent;
+            const scoreB = document.getElementById('scoreB').textContent;
+            const teamA = data.teamA;
+            const teamB = data.teamB;
+            
+            const matchWinner = (parseInt(scoreA) > parseInt(scoreB)) ? teamA : ((parseInt(scoreB) > parseInt(scoreA)) ? teamB : "SERI");
+
+            // Aggregate Goals and Cards
+            const goalSummary = {};
+            const cardSummary = {};
+            
+            data.events.forEach(e => {
+                const key = `${e.player_name} (${e.no_pg}, ${e.team})`;
+                if (e.type === 'GOL') {
+                    goalSummary[key] = (goalSummary[key] || 0) + 1;
+                } else if (e.type === 'KUNING' || e.type === 'MERAH') {
+                    cardSummary[e.team] = cardSummary[e.team] || { KUNING: [], MERAH: [] };
+                    cardSummary[e.team][e.type].push(`${e.player_name} (No. ${e.no_pg})`);
+                }
+            });
+
+            // Format Goals
+            const goalLines = Object.entries(goalSummary).map(([player, count]) => 
+                `- ${player}: ${count} Gol`
+            ).join('\n');
+            
+            // Format Cards
+            let cardLines = '\nKARTU DISIPLIN:';
+            [teamA, teamB].forEach(team => {
+                if (cardSummary[team]) {
+                    cardLines += `\n\n${team}:`;
+                    if (cardSummary[team]['KUNING'].length > 0) {
+                        cardSummary[team]['KUNING'].forEach(p => cardLines += `\n- ${p}: 🟨 Kartu Kuning`);
+                    }
+                    if (cardSummary[team]['MERAH'].length > 0) {
+                        cardSummary[team]['MERAH'].forEach(p => cardLines += `\n- ${p}: 🟥 Kartu Merah`);
+                    }
+                }
+            });
+
+            const whatsappText = 
+`*REKAP HASIL LAPANGAN*
+*LAPANNAM CUP 2025 (${data.date}) ${data.babak}*
+
+Pertandingan: ${teamA} vs ${teamB}
+
+SKOR AKHIR: ${teamA} ${scoreA} - ${scoreB} ${teamB}
+
+PENCETAK GOL (Top Skor Harian):
+${goalLines || '- Tidak ada gol -'}
+${cardLines}
+
+\`Pemenang: ${matchWinner}\`
+`;
+            
+            // --- Menggunakan execCommand('copy') untuk lingkungan Canvas yang dibatasi ---
+            const textarea = document.createElement('textarea');
+            textarea.value = whatsappText;
+            textarea.style.position = 'fixed'; 
+            textarea.style.top = 0;
+            textarea.style.left = 0;
+            textarea.style.opacity = 0;
+            
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    window.showCustomModal("Berhasil!", "Teks rekap telah disalin ke clipboard.", [{ text: "OK", action: "close" }]);
+                } else {
+                    window.showCustomModal("Gagal Salin", "Gagal menyalin. Silakan salin teks berikut secara manual dari konsol.", [{ text: "OK", action: "close" }]);
+                    console.log("Teks yang gagal disalin:", whatsappText);
+                }
+            } catch (err) {
+                console.error('Copy failed (execCommand): ', err);
+                window.showCustomModal("Gagal Salin", "Gagal menyalin. Silakan salin teks berikut secara manual dari konsol.", [{ text: "OK", action: "close" }]);
+                console.log("Teks yang gagal disalin:", whatsappText);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+        
+        // --- Custom Modal Logic ---
+        window.showCustomModal = (title, message, buttons) => {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            
+            const buttonContainer = document.getElementById('modal-buttons');
+            buttonContainer.innerHTML = '';
+            
+            buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.className = `btn py-2 px-4 ${btn.action === 'confirmFinish' ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-indigo-600 text-white hover:bg-indigo-700'}`;
+                button.textContent = btn.text;
+                button.onclick = () => {
+                    window.closeModal();
+                    if (btn.action === 'confirmFinish') window.confirmFinish();
+                    if (btn.action === 'reset') window.resetApp();
+                    if (btn.action === 'closeExport') window.closeExportModalAction();
+                };
+                buttonContainer.appendChild(button);
+            });
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('custom-modal').classList.remove('flex');
+            document.getElementById('custom-modal').classList.add('hidden');
+        };
+
+        // Initialize App
+        if (firebaseConfig) {
+            initFirebase();
+        } else {
+             window.showCustomModal("Error Fatal", "Harap tunggu, konfigurasi sistem sedang dimuat.", [{ text: "Tutup", action: "close" }]);
+        }
+    </script>
+</body>
+</html>
