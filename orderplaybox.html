@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Rental PS Playbox</title>
+    <!-- Memuat Tailwind CSS untuk styling modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Custom styling untuk tampilan mobile yang lebih baik */
+        .container-card {
+            max-width: 420px;
+        }
+        .btn-wa {
+            transition: all 0.2s;
+        }
+        .btn-wa:hover {
+            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.5), 0 4px 6px -2px rgba(34, 197, 94, 0.1);
+        }
+        /* Style untuk pesan error kustom */
+        .error-message {
+            display: none;
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="container-card w-full bg-white p-6 md:p-8 rounded-xl shadow-2xl border border-gray-100">
+        <h1 class="text-3xl font-extrabold text-green-700 text-center mb-2">Playbox Rental 🎮</h1>
+        <p class="text-gray-500 text-center mb-6">Pesan PS portable, kami antar ke lokasi Anda!</p>
+
+        <form id="orderForm" class="space-y-4">
+
+            <!-- Input Nama -->
+            <div>
+                <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                <input type="text" id="nama" name="nama" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" 
+                       placeholder="Cth: Budi Santoso">
+                <p id="error-nama" class="error-message">Nama lengkap wajib diisi.</p>
+            </div>
+
+            <!-- Input Nomor HP -->
+            <div>
+                <label for="nohp" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp (Aktif)</label>
+                <input type="tel" id="nohp" name="nohp" required value="08984120221"
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" 
+                       placeholder="Cth: 081234567890">
+                <p id="error-nohp" class="error-message">Nomor HP wajib diisi.</p>
+            </div>
+
+            <!-- Input Lokasi -->
+            <div>
+                <label for="lokasi" class="block text-sm font-medium text-gray-700 mb-1">Lokasi Pengiriman (Alamat/Patokan)</label>
+                <textarea id="lokasi" name="lokasi" rows="3" required
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                          placeholder="Cth: Komplek ABCD Blok C10, sertakan link Google Maps"></textarea>
+                <!-- ** Fix di sini ** Menggunakan <span> dengan font-bold -->
+                <p class="text-xs text-gray-500 mt-1">Sertakan juga <span class="font-bold">link Google Maps</span> untuk akurasi lokasi!</p>
+                <p id="error-lokasi" class="error-message">Lokasi pengiriman wajib diisi.</p>
+            </div>
+
+            <!-- Pilihan Paket Sewa (Berapa Jam) -->
+            <div>
+                <label for="paket" class="block text-sm font-medium text-gray-700 mb-2">Pilih Paket Sewa (Harga Dasar Rp 15.000/Jam)</label>
+                <select id="paket" name="paket" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-green-500 focus:border-green-500">
+                    <option value="" disabled selected>-- Pilih Durasi Sewa --</option>
+                    <option value="1 Jam (Rp 15.000)">1 Jam (Rp 15.000)</option>
+                    <option value="3 Jam (Rp 45.000)">3 Jam (Rp 45.000)</option>
+                    <option value="6 Jam - Paket Hemat (Rp 85.000)">6 Jam - Paket Hemat (Rp 85.000)</option>
+                    <option value="12 Jam - Paket Begadang (Rp 150.000)">12 Jam - Paket Begadang (Rp 150.000)</option>
+                    <option value="24 Jam - Paket Harian (Rp 250.000)">24 Jam - Paket Harian (Rp 250.000)</option>
+                </select>
+                <p id="error-paket" class="error-message">Paket sewa wajib dipilih.</p>
+            </div>
+            
+            <!-- Status Member/Loyalitas (Pilihan Tambahan) -->
+            <div>
+                <label for="member" class="block text-sm font-medium text-gray-700 mb-1">Status Loyalitas</label>
+                <select id="member" name="member"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-green-500 focus:border-green-500">
+                    <option value="Pelanggan Baru">Pelanggan Baru</option>
+                    <option value="Member (Mohon cek bonus)">Saya Pelanggan Setia (Punya Kupon Bonus 1 Jam)</option>
+                </select>
+            </div>
+
+            <!-- Centang Syarat & Ketentuan -->
+            <div class="flex items-start pt-2">
+                <div class="flex items-center h-5">
+                    <input id="syarat" name="syarat" type="checkbox" required
+                           class="focus:ring-green-500 h-4 w-4 text-green-600 border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="syarat" class="font-medium text-gray-700">Saya menyetujui <span class="text-green-600 font-semibold cursor-pointer hover:underline" onclick="showModal()">Syarat & Ketentuan Rental</span>.</label>
+                </div>
+                <p id="error-syarat" class="error-message mt-1">Anda wajib menyetujui Syarat & Ketentuan.</p>
+            </div>
+
+            <!-- Tombol Pesan via WhatsApp -->
+            <button type="submit" 
+                    class="btn-wa w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-bold rounded-xl shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 mt-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.001 2c-5.522 0-9.999 4.477-9.999 9.999 0 3.978 2.316 7.42 5.666 9.044l-.795 2.502 2.651-.767c.725.263 1.498.401 2.296.401 5.522 0 9.999-4.477 9.999-9.999s-4.477-9.999-9.999-9.999zm4.722 13.916c-.236.417-1.397.914-1.928 1.002-.533.091-1.045.136-1.543.012-.667-.162-1.282-.363-1.968-.687-.936-.44-1.874-1.121-2.715-1.99-.619-.646-1.127-1.425-1.55-2.297-.423-.872-.64-1.776-.64-2.738 0-1.037.332-1.942.825-2.527.493-.585 1.157-.962 1.838-.962.33 0 .64.072.885.195.244.123.473.303.687.538l.493.59c.214.234.34.507.378.79.038.284-.047.593-.19.885l-.36.31c-.143.123-.29.288-.413.479-.123.19-.245.41-.123.633.122.223.367.575.687.962.32.388.667.755 1.002 1.093.334.338.694.597 1.037.766.343.17.653.284.973.284.28 0 .585-.12.82-.365l.493-.538c.245-.25.53-.408.82-.408.29 0 .59.138.834.382l.667.687c.236.25.378.506.378.79s-.047.533-.378.95z"/>
+                </svg>
+                Pesan Sekarang (Kirim via WA)
+            </button>
+            <div id="loading" class="hidden text-center text-sm text-gray-500 mt-4">
+                Membuat link WhatsApp...
+            </div>
+        </form>
+        <p class="text-xs text-center text-gray-400 mt-4">
+            <span class="font-bold text-green-500">PROGRAM LOYALITAS:</span> Kumpulkan 10 Jam Sewa, GRATIS Bonus 1 Jam!
+        </p>
+    </div>
+
+    <!-- Modal Syarat & Ketentuan -->
+    <div id="syaratModal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Syarat & Ketentuan Rental</h2>
+            <div class="space-y-3 text-sm text-gray-600 h-64 overflow-y-auto pr-2">
+                <!-- ** Fix di sini ** Menggunakan <strong> (tag HTML) untuk bold -->
+                <p>1. <strong class="text-gray-800">Jaminan:</strong> Penyewa wajib memberikan KTP asli sebagai jaminan. KTP akan dikembalikan setelah Playbox diterima kembali dalam kondisi baik.</p>
+                <p>2. <strong class="text-gray-800">Harga:</strong> Harga sewa adalah final sesuai paket yang dipilih (termasuk diskon paket hemat).</p>
+                <p>3. <strong class="text-gray-800">Loyalitas:</strong> Setiap sewa (minimal 3 jam) akan dihitung sebagai akumulasi jam untuk mendapatkan bonus 1 jam gratis setelah mencapai total 10 jam sewa.</p>
+                <p>4. <strong class="text-gray-800">Kerusakan/Kehilangan:</strong> Kerusakan atau kehilangan perangkat (konsol, TV, stik, kabel) yang diakibatkan kelalaian penyewa akan dikenakan denda sesuai harga pasar perangkat tersebut (termasuk biaya perbaikan stik).</p>
+                <p>5. <strong class="text-gray-800">Keterlambatan:</strong> Keterlambatan pengembalian lebih dari 1 jam akan dihitung sebagai tambahan sewa per jam, atau sesuai kesepakatan awal.</p>
+                <p>6. <strong class="text-gray-800">Pembatalan:</strong> Pembatalan sewa yang dilakukan kurang dari 2 jam sebelum waktu pengiriman akan dikenakan biaya pembatalan sebesar 25% dari total sewa.</p>
+                <p>7. <strong class="text-gray-800">Penggunaan:</strong> Playbox hanya digunakan di lokasi yang sudah disepakati dalam formulir pemesanan.</p>
+                <p class="font-bold text-gray-700 mt-4">Dengan mencentang kolom persetujuan, Anda dianggap telah membaca dan menyetujui semua ketentuan di atas.</p>
+            </div>
+            <button onclick="hideModal()" class="mt-6 w-full py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const WA_NUMBER = "628984120221"; // Nomor WA Anda dalam format 62 tanpa 0 di depan
+        const form = document.getElementById('orderForm');
+        const loading = document.getElementById('loading');
+        
+        // Objek untuk menyimpan detail paket agar mudah diakses
+        const packages = {
+            "1 Jam (Rp 15.000)": { jam: 1, harga: "Rp 15.000" },
+            "3 Jam (Rp 45.000)": { jam: 3, harga: "Rp 45.000" },
+            "6 Jam - Paket Hemat (Rp 85.000)": { jam: 6, harga: "Rp 85.000" }, 
+            "12 Jam - Paket Begadang (Rp 150.000)": { jam: 12, harga: "Rp 150.000" },
+            "24 Jam - Paket Harian (Rp 250.000)": { jam: 24, harga: "Rp 250.000" }
+        };
+
+        // Fungsi untuk menampilkan modal Syarat & Ketentuan
+        function showModal() {
+            document.getElementById('syaratModal').classList.remove('hidden');
+            document.getElementById('syaratModal').classList.add('flex');
+        }
+
+        // Fungsi untuk menyembunyikan modal Syarat & Ketentuan
+        function hideModal() {
+            document.getElementById('syaratModal').classList.remove('flex');
+            document.getElementById('syaratModal').classList.add('hidden');
+        }
+
+        // Fungsi utama untuk handle submit form
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Sembunyikan semua pesan error sebelum validasi
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            
+            const nama = document.getElementById('nama').value.trim();
+            const nohp = document.getElementById('nohp').value.trim();
+            const lokasi = document.getElementById('lokasi').value.trim();
+            const paket = document.getElementById('paket').value;
+            const memberStatus = document.getElementById('member').value;
+            const syarat = document.getElementById('syarat').checked;
+            
+            let isValid = true;
+
+            // Validasi input
+            if (!nama) {
+                document.getElementById('error-nama').style.display = 'block';
+                isValid = false;
+            }
+            if (!nohp) {
+                document.getElementById('error-nohp').style.display = 'block';
+                isValid = false;
+            }
+            if (!lokasi) {
+                document.getElementById('error-lokasi').style.display = 'block';
+                isValid = false;
+            }
+            if (!paket) {
+                document.getElementById('error-paket').style.display = 'block';
+                isValid = false;
+            }
+            if (!syarat) {
+                document.getElementById('error-syarat').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return; // Hentikan proses jika ada input yang belum valid
+            }
+
+            loading.classList.remove('hidden');
+            
+            // Ambil detail paket
+            const selectedPackageDetail = packages[paket];
+
+            // Format pesan WA (menggunakan * untuk bold di WA, ini sudah benar)
+            const message = `
+*PESANAN RENTAL PLAYBOX BARU*
+____________________________
+
+Halo Admin, saya ingin memesan PS Playbox. Berikut detail pemesanan saya:
+
+*👤 Nama:* ${nama}
+*📞 No. HP/WA:* ${nohp}
+*📦 Paket Sewa:* ${selectedPackageDetail.jam} Jam (${selectedPackageDetail.harga})
+*📍 Lokasi Kirim:* ${lokasi}
+*✅ Status Loyalitas:* ${memberStatus}
+*💰 Total Biaya:* ${selectedPackageDetail.harga} (Belum termasuk biaya antar jika di luar zona)
+
+Mohon konfirmasi pesanan ini dan infokan total biaya final (termasuk biaya antar) kepada saya. Terima kasih!
+            `.trim();
+
+            // Encoding pesan untuk URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Membuat link WhatsApp
+            const whatsappLink = `https://wa.me/${WA_NUMBER}?text=${encodedMessage}`;
+
+            // Arahkan ke WhatsApp
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                window.open(whatsappLink, '_blank');
+            }, 500); // Penundaan kecil untuk efek loading
+        });
+        
+        // Mengubah format nomor HP agar sesuai standar WA (62 tanpa 0 di depan)
+        document.getElementById('nohp').addEventListener('blur', function() {
+            let num = this.value.trim().replace(/\D/g, ''); // Hapus semua non-digit
+            if (num.startsWith('0')) {
+                num = '62' + num.substring(1);
+            }
+            this.value = num.replace('62', '0'); // Tetap tampilkan 0 di depan untuk user input
+        });
+        
+        // Pastikan modal tertutup saat load
+        hideModal();
+    </script>
+</body>
+</html>
+
+
